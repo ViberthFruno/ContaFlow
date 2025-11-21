@@ -8,8 +8,8 @@ Búsqueda robusta de correos 'Cargador' con Excel, procesamiento automático y s
 import time
 import threading
 from datetime import datetime
-from contaflow.email.email_manager import EmailManager
-from contaflow.config.config_manager import ConfigManager
+from email_manager import EmailManager
+from config_manager import ConfigManager
 
 
 class EmailProcessor:
@@ -158,7 +158,7 @@ class EmailProcessor:
             # Inicializar ExcelProcessor si hay configuración XML
             if self.xml_config:
                 try:
-                    from contaflow.core.excel_processor import ExcelProcessor
+                    from excel_processor import ExcelProcessor
                     self.excel_processor = ExcelProcessor(self.automation_tab)
                     self.log_message("✅ Procesador Excel/XML inicializado", "success")
                 except (ImportError, Exception) as e:
@@ -168,7 +168,7 @@ class EmailProcessor:
             # Inicializar EmailSender si hay configuración de destinatarios
             if self.recipients_config:
                 try:
-                    from contaflow.email.email_sender import EmailSender
+                    from email_sender import EmailSender
                     self.email_sender = EmailSender(self.automation_tab)
                     self.log_message("✅ Sistema de envío inicializado", "success")
                 except (ImportError, Exception) as e:

@@ -5,9 +5,9 @@ Integra AutomatizacionUI (tkinter nativo) y BotController sin auto-inicio ni con
 """
 # Archivos relacionados: automatizacion_ui.py, bot_controller.py, config_manager.py
 
-from contaflow.ui.tabs.automatizacion_ui import AutomatizacionUI
-from contaflow.core.bot_controller import BotController
-from contaflow.config.config_manager import ConfigManager
+from automatizacion_ui import AutomatizacionUI
+from bot_controller import BotController
+from config_manager import ConfigManager
 
 
 class AutomatizacionTab:

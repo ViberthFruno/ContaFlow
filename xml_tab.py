@@ -9,8 +9,8 @@ y opciones de procesamiento Excel/XML con diseño mejorado sin espacios en blanc
 import tkinter as tk
 from tkinter import ttk, filedialog
 import os
-from contaflow.config.config_manager import ConfigManager
-from contaflow.ui.theme_manager import ModernTheme
+from config_manager import ConfigManager
+from theme_manager import ModernTheme
 
 
 class XmlTab:
