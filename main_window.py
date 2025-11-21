@@ -100,11 +100,9 @@ class MainWindow(tk.Tk):
 
         # Crear frames para cada pestaña
         self.automatizacion_frame = ttk.Frame(self.notebook)
-        self.configuracion_frame = ttk.Frame(self.notebook)
 
         # Agregar pestañas al notebook con estilo moderno
         self.notebook.add(self.automatizacion_frame, text="⚡ Automatización")
-        self.notebook.add(self.configuracion_frame, text="⚙️ Configuración")
 
         # Vincular evento de cambio de pestaña
         self.notebook.bind("<<NotebookTabChanged>>", self._on_tab_changed)
@@ -181,15 +179,6 @@ class MainWindow(tk.Tk):
             print(f"⚠️ Error inicializando automatización: {e}")
             self.tabs["automatizacion"] = None
 
-        try:
-            # Importar y crear pestaña de configuración
-            from configuracion_tab import ConfiguracionTab
-            self.tabs["configuracion"] = ConfiguracionTab(self.configuracion_frame)
-            print("✅ Pestaña de configuración inicializada")
-        except Exception as e:
-            print(f"⚠️ Error inicializando configuración: {e}")
-            self.tabs["configuracion"] = None
-
     def _on_tab_changed(self, event):
         """Maneja el cambio de pestaña."""
         try:
@@ -197,8 +186,6 @@ class MainWindow(tk.Tk):
 
             if "Automatización" in selected_tab:
                 self.show_tab("automatizacion")
-            elif "Configuración" in selected_tab:
-                self.show_tab("configuracion")
 
         except Exception as e:
             print(f"⚠️ Error en cambio de pestaña: {e}")

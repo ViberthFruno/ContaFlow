@@ -11,6 +11,7 @@ from tkinter import ttk
 import threading
 from datetime import datetime
 from theme_manager import ModernTheme, create_modern_text_widget
+from email_config_modals import EmailConfigModal, RecipientsConfigModal
 
 
 class AutomatizacionUI:
@@ -137,6 +138,18 @@ class AutomatizacionUI:
         buttons_frame = ttk.Frame(parent)
         buttons_frame.pack(fill=tk.X, side=tk.BOTTOM, pady=(10, 0))
 
+        # Botón configuración de email
+        email_config_btn = ttk.Button(buttons_frame, text="⚙️ Configuración de Email",
+                                      command=self._handle_email_config_click,
+                                      style="TButton")
+        email_config_btn.pack(fill=tk.X, pady=(0, 8), ipady=8)
+
+        # Botón configurar destinatarios
+        recipients_btn = ttk.Button(buttons_frame, text="📧 Configurar Destinatarios",
+                                    command=self._handle_recipients_config_click,
+                                    style="TButton")
+        recipients_btn.pack(fill=tk.X, pady=(0, 8), ipady=8)
+
         # Botón limpiar log
         clear_btn = ttk.Button(buttons_frame, text="🗑️ Limpiar Log",
                                command=self._handle_clear_log_click,
@@ -186,6 +199,22 @@ class AutomatizacionUI:
         """Maneja clic en limpiar log."""
         if self.on_clear_log_click:
             self.on_clear_log_click()
+
+    def _handle_email_config_click(self):
+        """Maneja clic en configuración de email."""
+        try:
+            EmailConfigModal(self.parent)
+        except Exception as e:
+            print(f"Error abriendo modal de email: {e}")
+            self.add_log_message(f"❌ Error abriendo configuración de email: {e}", "error")
+
+    def _handle_recipients_config_click(self):
+        """Maneja clic en configuración de destinatarios."""
+        try:
+            RecipientsConfigModal(self.parent)
+        except Exception as e:
+            print(f"Error abriendo modal de destinatarios: {e}")
+            self.add_log_message(f"❌ Error abriendo configuración de destinatarios: {e}", "error")
 
     # ========== MÉTODOS DE LOGGING ==========
 
