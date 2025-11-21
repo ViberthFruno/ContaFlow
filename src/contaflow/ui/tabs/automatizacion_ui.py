@@ -10,7 +10,7 @@ import tkinter as tk
 from tkinter import ttk
 import threading
 from datetime import datetime
-from theme_manager import ModernTheme, create_modern_text_widget
+from contaflow.ui.theme_manager import ModernTheme, create_modern_text_widget
 
 
 class AutomatizacionUI:

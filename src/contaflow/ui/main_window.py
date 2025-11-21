@@ -11,7 +11,7 @@ from tkinter import ttk
 import sys
 import threading
 import time
-from theme_manager import ModernTheme, apply_modern_theme
+from contaflow.ui.theme_manager import ModernTheme, apply_modern_theme
 
 
 class MainWindow(tk.Tk):
@@ -174,7 +174,7 @@ class MainWindow(tk.Tk):
         """Inicializa las pestañas del sistema simplificado."""
         try:
             # Importar y crear pestaña de automatización
-            from automatizacion_tab import AutomatizacionTab
+            from contaflow.ui.tabs.automatizacion_tab import AutomatizacionTab
             self.tabs["automatizacion"] = AutomatizacionTab(self.automatizacion_frame)
             print("✅ Pestaña de automatización inicializada - Sistema simplificado")
         except Exception as e:
@@ -183,7 +183,7 @@ class MainWindow(tk.Tk):
 
         try:
             # Importar y crear pestaña de configuración
-            from configuracion_tab import ConfiguracionTab
+            from contaflow.ui.tabs.configuracion_tab import ConfiguracionTab
             self.tabs["configuracion"] = ConfiguracionTab(self.configuracion_frame)
             print("✅ Pestaña de configuración inicializada")
         except Exception as e:
@@ -323,7 +323,7 @@ class MainWindow(tk.Tk):
         try:
             # Intentar obtener información de configuración
             try:
-                from config_manager import ConfigManager
+                from contaflow.config.config_manager import ConfigManager
                 config_manager = ConfigManager()
                 config = config_manager.load_config()
 
