@@ -78,7 +78,7 @@ class AutomatizacionUI:
         # Estado del bot (sin fondo)
         self.bot_status_label = tk.Label(top_frame, text="🔴 Bot Detenido",
                                          font=("Segoe UI", 12, "bold"),
-                                         bg=ModernTheme.BG_CARD,
+                                         bg=ModernTheme.BG_SURFACE,
                                          fg=ModernTheme.DANGER,
                                          padx=10, pady=10)
         self.bot_status_label.grid(row=0, column=0, pady=(0, 15))
