@@ -44,81 +44,110 @@ class AutomatizacionUI:
         """Crea el frame principal."""
         self.main_frame = ttk.Frame(self.parent)
 
-        # Configurar grid
+        # Configurar grid con 3 secciones:
+        # - Fila 0: Sección superior grande (columnspan=2)
+        # - Fila 1, Col 0: Control del bot (izquierda)
+        # - Fila 1, Col 1: Log (derecha)
         self.main_frame.grid_columnconfigure(0, weight=1)
-        self.main_frame.grid_columnconfigure(1, weight=2)
-        self.main_frame.grid_rowconfigure(0, weight=1)
+        self.main_frame.grid_columnconfigure(1, weight=3)  # Log más ancho
+        self.main_frame.grid_rowconfigure(0, weight=0)  # Sección superior - tamaño fijo
+        self.main_frame.grid_rowconfigure(1, weight=1)  # Sección inferior - se expande
 
     def create_content(self):
-        """Crea el contenido simplificado."""
-        # Crear frame izquierdo - Controles básicos
+        """Crea el contenido con 3 secciones."""
+        # Sección superior - Botón principal (fila 0, columna 0-1)
+        self.create_top_section()
+
+        # Sección inferior izquierda - Control del bot (fila 1, columna 0)
         self.create_control_panel()
 
-        # Crear frame derecho - Log
+        # Sección inferior derecha - Log (fila 1, columna 1)
         self.create_log_panel()
 
+    def create_top_section(self):
+        """Crea la sección superior con el botón principal de iniciar/detener bot."""
+        # Frame superior grande que ocupa todo el ancho
+        top_frame = ttk.LabelFrame(self.main_frame, text="🤖 Bot de Automatización",
+                                   padding=30, style="Modern.TLabelframe")
+        top_frame.grid(row=0, column=0, columnspan=2, padx=0, pady=(0, 15), sticky="ew")
+
+        # Configurar para centrar contenido
+        top_frame.grid_columnconfigure(0, weight=1)
+
+        # Card con estado del bot
+        status_card = tk.Frame(top_frame, bg=ModernTheme.BG_SURFACE,
+                              highlightbackground=ModernTheme.BORDER_LIGHT,
+                              highlightthickness=1)
+        status_card.grid(row=0, column=0, pady=(0, 20))
+
+        # Estado del bot
+        self.bot_status_label = tk.Label(status_card, text="🔴 Bot Detenido",
+                                         font=("Segoe UI", 16, "bold"),
+                                         bg=ModernTheme.BG_SURFACE,
+                                         fg=ModernTheme.DANGER,
+                                         padx=30, pady=20)
+        self.bot_status_label.pack()
+
+        # Botón toggle (iniciar/detener) - Grande y centrado
+        self.btn_toggle = ttk.Button(top_frame, text="▶️ Iniciar Bot",
+                                     command=self._handle_toggle_bot_click,
+                                     style="Primary.TButton")
+        self.btn_toggle.grid(row=1, column=0, pady=(0, 10), ipadx=40, ipady=15)
+
     def create_control_panel(self):
-        """Crea el panel de controles moderno y elegante."""
+        """Crea el panel de controles con botón de limpiar log."""
         # Frame principal de controles con estilo moderno
         control_frame = ttk.LabelFrame(self.main_frame, text="🎛️ Control del Bot",
                                       padding=20, style="Modern.TLabelframe")
-        control_frame.grid(row=0, column=0, padx=(0, 10), pady=0, sticky="nsew")
+        control_frame.grid(row=1, column=0, padx=(0, 10), pady=0, sticky="nsew")
 
-        # Estado del bot con card moderno
-        self.create_status_section(control_frame)
+        # Información del sistema
+        self.create_info_section(control_frame)
 
-        # Botones principales con estilos modernos
-        self.create_main_buttons(control_frame)
+        # Botones de control
+        self.create_control_buttons(control_frame)
 
-    def create_status_section(self, parent):
-        """Crea la sección de estado moderna con card visual."""
-        # Card con fondo de superficie
-        status_card = tk.Frame(parent, bg=ModernTheme.BG_SURFACE,
-                              highlightbackground=ModernTheme.BORDER_LIGHT,
-                              highlightthickness=1)
-        status_card.pack(fill=tk.X, pady=(0, 20))
+    def create_info_section(self, parent):
+        """Crea la sección de información del sistema."""
+        # Card con información del sistema
+        info_card = tk.Frame(parent, bg=ModernTheme.BG_SURFACE,
+                            highlightbackground=ModernTheme.BORDER_LIGHT,
+                            highlightthickness=1)
+        info_card.pack(fill=tk.BOTH, expand=True, pady=(0, 20))
 
         # Label de título
-        title_label = tk.Label(status_card, text="Estado del Bot",
+        title_label = tk.Label(info_card, text="Información del Sistema",
                               font=ModernTheme.FONT_SUBHEADING,
                               bg=ModernTheme.BG_SURFACE,
                               fg=ModernTheme.TEXT_SECONDARY)
-        title_label.pack(pady=(10, 5))
+        title_label.pack(pady=(15, 10))
 
-        # Estado del bot con mejor visibilidad
-        self.bot_status_label = tk.Label(status_card, text="🔴 Bot Detenido",
-                                         font=("Segoe UI", 14, "bold"),
-                                         bg=ModernTheme.BG_SURFACE,
-                                         fg=ModernTheme.DANGER,
-                                         pady=15)
-        self.bot_status_label.pack()
+        # Información del monitoreo
+        info_text = "⏰ Monitoreo: 1 minuto\n🎯 Búsqueda: 'Cargador'\n📎 Archivos: Excel"
+        info_label = tk.Label(info_card, text=info_text,
+                             font=("Segoe UI", 10),
+                             bg=ModernTheme.BG_SURFACE,
+                             fg=ModernTheme.TEXT_PRIMARY,
+                             justify=tk.LEFT,
+                             pady=10)
+        info_label.pack()
 
-    def create_main_buttons(self, parent):
-        """Crea los botones principales con estilos modernos."""
+    def create_control_buttons(self, parent):
+        """Crea los botones de control."""
         buttons_frame = ttk.Frame(parent)
-        buttons_frame.pack(fill=tk.X, side=tk.BOTTOM, pady=(20, 0))
+        buttons_frame.pack(fill=tk.X, side=tk.BOTTOM, pady=(10, 0))
 
-        # Botón toggle (iniciar/detener) - Grande y destacado
-        self.btn_toggle = ttk.Button(buttons_frame, text="▶️ Iniciar Bot",
-                                     command=self._handle_toggle_bot_click,
-                                     style="Primary.TButton")
-        self.btn_toggle.pack(fill=tk.X, pady=(0, 15), ipady=8)
-
-        # Separador moderno
-        separator = ttk.Separator(buttons_frame, orient='horizontal')
-        separator.pack(fill=tk.X, pady=(5, 15))
-
-        # Botón limpiar log con estilo normal
+        # Botón limpiar log
         clear_btn = ttk.Button(buttons_frame, text="🗑️ Limpiar Log",
                                command=self._handle_clear_log_click,
                                style="TButton")
-        clear_btn.pack(fill=tk.X, ipady=5)
+        clear_btn.pack(fill=tk.X, ipady=8)
 
     def create_log_panel(self):
         """Crea el panel de log moderno con fondo oscuro elegante."""
         log_frame = ttk.LabelFrame(self.main_frame, text="📋 Log de Actividad",
                                   padding=10, style="Modern.TLabelframe")
-        log_frame.grid(row=0, column=1, padx=0, pady=0, sticky="nsew")
+        log_frame.grid(row=1, column=1, padx=0, pady=0, sticky="nsew")
 
         # Configurar expansión del frame
         log_frame.grid_columnconfigure(0, weight=1)
