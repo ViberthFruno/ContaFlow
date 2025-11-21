@@ -149,9 +149,10 @@ class ConfiguracionTab:
                 self.subtabs[subtab_name].show()
                 self.current_subtab = subtab_name
 
-                # Cargar configuración si es email_destinatarios
-                if subtab_name == "email_destinatarios":
-                    self.load_existing_config()
+                # 🔒 ELIMINADO: Ya no se carga aquí para prevenir duplicados
+                # La carga se hace UNA SOLA VEZ en EmailDestinatariosSubTab.__init__()
+                # if subtab_name == "email_destinatarios":
+                #     self.load_existing_config()
 
         except Exception as e:
             print(f"⚠️ Error mostrando sub-pestaña {subtab_name}: {e}")
@@ -219,6 +220,17 @@ class EmailDestinatariosSubTab:
         self.next_cc_id = 0  # ✅ Contador para IDs únicos
         self.config_loaded = False  # ✅ Flag para evitar recargas múltiples
         self.is_processing = False  # ✅ Flag para debouncing
+        self.is_loading = False  # 🔒 NUEVO: Flag para prevenir cargas concurrentes
+
+        # 🎯 NUEVO: Máquina de estados UI
+        self.UI_STATE_LOADING = "loading"
+        self.UI_STATE_INTERACTIVE = "interactive"
+        self.UI_STATE_PROCESSING = "processing"
+        self.ui_state = self.UI_STATE_LOADING  # Estado inicial
+
+        # 🧹 NUEVO: Referencias para limpieza de bindings y timers
+        self.pending_timers = []  # Lista de timers pendientes para cancelar
+        self.validation_timer = None  # Timer de validación con debouncing
 
         # Referencias a widgets
         self.credentials_status_label = None
@@ -231,6 +243,9 @@ class EmailDestinatariosSubTab:
 
         # Crear interfaz
         self.create_interface()
+
+        # 🚀 NUEVO: Cargar configuración UNA SOLA VEZ al inicio
+        self.parent.after(100, self._load_config_once)
 
     def create_interface(self):
         """Crea la interfaz con diseño de 3 columnas."""
@@ -443,61 +458,50 @@ class EmailDestinatariosSubTab:
         clear_btn.pack(fill=tk.X, ipady=5)
 
     def add_cc_field(self):
-        """Agrega un nuevo campo CC con ID único y validación en tiempo real."""
-        # ✅ Debouncing: prevenir clicks múltiples
-        if self.is_processing:
+        """Agrega un nuevo campo CC con ID único y validación en tiempo real (interacción del usuario)."""
+        # 🔒 MEJORADO: Usar estado UI en lugar de solo is_processing
+        if self.ui_state == self.UI_STATE_PROCESSING or self.is_processing:
             return
 
         if len(self.cc_entries) >= self.max_ccs:
             self.update_recipients_status("⚠️ Máximo 10 CCs permitidos", "orange")
             return
 
-        # ✅ Activar flag de procesamiento
+        # 🔒 MEJORADO: Activar estado de procesamiento
+        self.ui_state = self.UI_STATE_PROCESSING
         self.is_processing = True
         self.add_cc_btn.config(state="disabled")
 
-        # ✅ Generar ID único para este CC
-        cc_id = self.next_cc_id
-        self.next_cc_id += 1
+        # 🆕 Usar el método silencioso para crear el widget
+        cc_data = self._add_cc_field_silent("")
 
-        # Frame para este CC
-        cc_container = ttk.Frame(self.cc_frame)
-        cc_container.pack(fill=tk.X, padx=5, pady=2)
-        cc_container.grid_columnconfigure(0, weight=1)
+        if not cc_data:
+            # Si falló, restaurar estado
+            self.ui_state = self.UI_STATE_INTERACTIVE
+            self.is_processing = False
+            return
 
-        # Entry para email
-        cc_entry = ttk.Entry(cc_container, font=("Arial", 9))
-        cc_entry.grid(row=0, column=0, sticky="ew", padx=(0, 5))
+        # 🧹 MEJORADO: Cancelar timers previos antes de crear uno nuevo
+        self._cancel_pending_timers()
 
-        # ✅ Agregar validación en tiempo real
-        cc_entry.bind('<KeyRelease>', self._validate_duplicates_realtime)
-        cc_entry.bind('<FocusOut>', self._validate_email_format_realtime)
-
-        # Botón eliminar con ID único
-        remove_btn = ttk.Button(cc_container, text="❌", width=3,
-                                command=lambda: self.remove_cc_field(cc_id))
-        remove_btn.grid(row=0, column=1)
-
-        # ✅ Guardar referencia con ID único
-        self.cc_entries.append({
-            'id': cc_id,
-            'container': cc_container,
-            'entry': cc_entry
-        })
-
-        self.update_cc_counter()
-
-        # ✅ Rehabilitar botón después de 300ms (debouncing)
+        # ✅ Rehabilitar botón después de 300ms (debouncing mejorado)
         def enable_button():
             self.is_processing = False
+            self.ui_state = self.UI_STATE_INTERACTIVE
             if len(self.cc_entries) < self.max_ccs:
                 self.add_cc_btn.config(state="normal")
 
-        self.parent.after(300, enable_button)
+        timer1 = self.parent.after(300, enable_button)
+        self.pending_timers.append(timer1)
 
         # ✅ Feedback visual
         self.update_recipients_status("✅ CC agregado", "green")
-        self.parent.after(2000, lambda: self.update_recipients_status("", "green"))
+
+        def clear_status():
+            self.update_recipients_status("", "green")
+
+        timer2 = self.parent.after(2000, clear_status)
+        self.pending_timers.append(timer2)
 
     def remove_cc_field(self, cc_id):
         """Elimina un campo CC usando ID único."""
@@ -534,6 +538,59 @@ class EmailDestinatariosSubTab:
         """Actualiza el contador de CCs."""
         if self.cc_counter_label:
             self.cc_counter_label.config(text=f"{len(self.cc_entries)}/{self.max_ccs}")
+
+    def _add_cc_field_silent(self, email_value=""):
+        """🆕 MEJORA #2: Agrega un campo CC sin feedback visual (para carga programática).
+
+        Este método está diseñado para ser usado durante la carga de configuración,
+        sin lógica de UI, timers, ni feedback visual que puedan causar problemas.
+
+        Args:
+            email_value (str): Valor del email a cargar en el campo
+
+        Returns:
+            dict: Diccionario con referencias al CC creado, o None si falló
+        """
+        if len(self.cc_entries) >= self.max_ccs:
+            return None
+
+        # Generar ID único
+        cc_id = self.next_cc_id
+        self.next_cc_id += 1
+
+        # Frame para este CC
+        cc_container = ttk.Frame(self.cc_frame)
+        cc_container.pack(fill=tk.X, padx=5, pady=2)
+        cc_container.grid_columnconfigure(0, weight=1)
+
+        # Entry para email
+        cc_entry = ttk.Entry(cc_container, font=("Arial", 9))
+        cc_entry.grid(row=0, column=0, sticky="ew", padx=(0, 5))
+
+        # Insertar valor si se proporcionó
+        if email_value:
+            cc_entry.insert(0, email_value)
+
+        # Agregar validación en tiempo real
+        cc_entry.bind('<KeyRelease>', self._validate_duplicates_realtime)
+        cc_entry.bind('<FocusOut>', self._validate_email_format_realtime)
+
+        # Botón eliminar
+        remove_btn = ttk.Button(cc_container, text="❌", width=3,
+                                command=lambda: self.remove_cc_field(cc_id))
+        remove_btn.grid(row=0, column=1)
+
+        # Guardar referencia
+        cc_data = {
+            'id': cc_id,
+            'container': cc_container,
+            'entry': cc_entry
+        }
+        self.cc_entries.append(cc_data)
+
+        self.update_cc_counter()
+
+        return cc_data
 
     def test_connection(self):
         """Prueba la conexión de email."""
@@ -591,6 +648,9 @@ class EmailDestinatariosSubTab:
 
     def clear_all_config(self):
         """Limpia toda la configuración."""
+        # 🧹 MEJORADO: Cancelar timers pendientes
+        self._cancel_pending_timers()
+
         # Limpiar credenciales
         self.provider_var.set("Gmail")
         self.email_var.set("")
@@ -599,17 +659,16 @@ class EmailDestinatariosSubTab:
         # Limpiar destinatarios
         self.main_email_var.set("")
 
-        # Eliminar todos los CCs
-        for cc_data in self.cc_entries[:]:
-            cc_data['container'].destroy()
+        # 🧹 MEJORADO: Usar método de limpieza que unbindea eventos
+        self._cleanup_cc_widgets()
 
-        self.cc_entries.clear()
-        self.next_cc_id = 0  # ✅ Resetear contador de IDs
-        self.update_cc_counter()
+        # Habilitar botón agregar
         self.add_cc_btn.config(state="normal")
 
-        # ✅ Resetear flag de configuración cargada
+        # ✅ Resetear flags de configuración cargada
         self.config_loaded = False
+        self.is_loading = False
+        self.ui_state = self.UI_STATE_INTERACTIVE
 
         # Actualizar estados
         self.update_credentials_status("🔴 No configurado", "red")
@@ -621,109 +680,85 @@ class EmailDestinatariosSubTab:
             print(f"Error limpiando configuración: {e}")
 
     def load_existing_config(self):
-        """Carga configuración existente."""
-        try:
-            # ✅ FIX CRÍTICO: Prevenir cargas múltiples
-            if self.config_loaded:
-                return
+        """⚠️ DEPRECADO: Este método se mantiene solo por compatibilidad.
 
-            config = self.config_tab.config_manager.load_config()
-            if not config:
-                return
+        La carga ahora se hace automáticamente UNA SOLA VEZ en _load_config_once()
+        durante el __init__. Llamar este método múltiples veces no hará nada.
+        """
+        # 🔒 PROTECCIÓN CRÍTICA: Si ya se cargó, ignorar completamente
+        if self.config_loaded or self.is_loading:
+            print(f"[DEBUG] load_existing_config: Ignorando carga (ya cargado={self.config_loaded}, cargando={self.is_loading})")
+            return
 
-            # ✅ FIX CRÍTICO: Limpiar CCs existentes ANTES de cargar
-            # Esto previene duplicados al recargar
-            for cc_data in self.cc_entries[:]:
-                cc_data['container'].destroy()
-            self.cc_entries.clear()
-            self.next_cc_id = 0  # Resetear contador de IDs
-            self.update_cc_counter()
-
-            # Cargar credenciales
-            self.provider_var.set(config.get("provider", "Gmail"))
-            self.email_var.set(config.get("email", ""))
-            self.password_var.set(config.get("password", ""))
-
-            if config.get("email"):
-                self.update_credentials_status("🟡 Email cargado", "orange")
-
-            # Cargar destinatarios
-            recipients_config = config.get("recipients_config")
-            if recipients_config:
-                # Cargar destinatario principal
-                self.main_email_var.set(recipients_config.get("main_recipient", ""))
-
-                # Cargar CCs
-                for cc_email in recipients_config.get("cc_recipients", []):
-                    if cc_email.strip():
-                        # Deshabilitar temporalmente is_processing para cargar
-                        original_processing = self.is_processing
-                        self.is_processing = False
-
-                        self.add_cc_field()
-                        self.cc_entries[-1]['entry'].insert(0, cc_email)
-
-                        self.is_processing = original_processing
-
-                if recipients_config.get("main_recipient"):
-                    self.update_recipients_status("🟡 Destinatarios cargados", "orange")
-
-            # ✅ Marcar como cargado
-            self.config_loaded = True
-
-        except Exception as e:
-            print(f"Error cargando configuración: {e}")
+        # Si por alguna razón no se cargó, redirigir a _load_config_once
+        print("[DEBUG] load_existing_config: Redirigiendo a _load_config_once (no debería pasar)")
+        self._load_config_once()
 
     def _validate_duplicates_realtime(self, event=None):
-        """Valida duplicados en tiempo real mientras el usuario escribe."""
-        try:
-            # Obtener todos los emails actuales
-            main_email = self.main_email_var.get().strip().lower()
-            cc_emails = []
-
-            for cc_data in self.cc_entries:
-                email = cc_data['entry'].get().strip().lower()
-                cc_emails.append((cc_data, email))
-
-            # Encontrar duplicados
-            all_emails = [main_email] if main_email else []
-            seen_emails = set()
-            duplicates = set()
-
-            # Agregar main_email a seen
-            if main_email:
-                seen_emails.add(main_email)
-
-            # Buscar duplicados en CCs
-            for cc_data, email in cc_emails:
-                if email:
-                    if email in seen_emails:
-                        duplicates.add(email)
-                    seen_emails.add(email)
-
-            # ✅ Marcar visualmente los duplicados
-            for cc_data, email in cc_emails:
-                entry = cc_data['entry']
-                if email and email in duplicates:
-                    # Email duplicado - marcar en rojo
-                    entry.config(foreground='red')
-                elif email and not self._validate_email_format(email):
-                    # Formato inválido - marcar en naranja
-                    entry.config(foreground='orange')
-                else:
-                    # Email válido - color normal
-                    entry.config(foreground='black')
-
-            # Actualizar estado
-            if duplicates:
-                dup_list = ', '.join(duplicates)
-                self.update_recipients_status(f"⚠️ Duplicados: {dup_list[:30]}...", "orange")
-            else:
-                # No mostrar nada si no hay errores
+        """🔧 MEJORA #5: Valida duplicados con debouncing mejorado (300ms)."""
+        # 🔒 Cancelar validación pendiente
+        if self.validation_timer:
+            try:
+                self.parent.after_cancel(self.validation_timer)
+            except:
                 pass
+            self.validation_timer = None
 
-        except Exception as e:
-            print(f"Error validando duplicados: {e}")
+        # 🔧 Programar nueva validación después de 300ms (debouncing)
+        def do_validation():
+            try:
+                # Obtener todos los emails actuales
+                main_email = self.main_email_var.get().strip().lower()
+                cc_emails = []
+
+                for cc_data in self.cc_entries:
+                    email = cc_data['entry'].get().strip().lower()
+                    cc_emails.append((cc_data, email))
+
+                # Encontrar duplicados
+                all_emails = [main_email] if main_email else []
+                seen_emails = set()
+                duplicates = set()
+
+                # Agregar main_email a seen
+                if main_email:
+                    seen_emails.add(main_email)
+
+                # Buscar duplicados en CCs
+                for cc_data, email in cc_emails:
+                    if email:
+                        if email in seen_emails:
+                            duplicates.add(email)
+                        seen_emails.add(email)
+
+                # ✅ Marcar visualmente los duplicados
+                for cc_data, email in cc_emails:
+                    entry = cc_data['entry']
+                    if email and email in duplicates:
+                        # Email duplicado - marcar en rojo
+                        entry.config(foreground='red')
+                    elif email and not self._validate_email_format(email):
+                        # Formato inválido - marcar en naranja
+                        entry.config(foreground='orange')
+                    else:
+                        # Email válido - color normal
+                        entry.config(foreground='black')
+
+                # Actualizar estado
+                if duplicates:
+                    dup_list = ', '.join(duplicates)
+                    self.update_recipients_status(f"⚠️ Duplicados: {dup_list[:30]}...", "orange")
+                else:
+                    # No mostrar nada si no hay errores
+                    pass
+
+                self.validation_timer = None
+
+            except Exception as e:
+                print(f"Error validando duplicados: {e}")
+
+        # Programar validación con debouncing
+        self.validation_timer = self.parent.after(300, do_validation)
 
     def _validate_email_format_realtime(self, event=None):
         """Valida formato de email en tiempo real al perder el foco."""
@@ -792,6 +827,118 @@ class EmailDestinatariosSubTab:
         """Valida formato de email."""
         pattern = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
         return bool(re.match(pattern, email.strip()))
+
+    def _cancel_pending_timers(self):
+        """🧹 MEJORA #3: Cancela todos los timers pendientes para evitar efectos secundarios."""
+        for timer_id in self.pending_timers:
+            try:
+                self.parent.after_cancel(timer_id)
+            except:
+                pass  # Timer ya ejecutado o cancelado
+        self.pending_timers.clear()
+
+        # Cancelar timer de validación si existe
+        if self.validation_timer:
+            try:
+                self.parent.after_cancel(self.validation_timer)
+            except:
+                pass
+            self.validation_timer = None
+
+    def _cleanup_cc_widgets(self):
+        """🧹 MEJORA #3: Limpia todos los widgets CC y sus bindings explícitamente."""
+        for cc_data in self.cc_entries[:]:
+            try:
+                # Unbind eventos antes de destruir
+                entry = cc_data['entry']
+                if entry.winfo_exists():
+                    entry.unbind('<KeyRelease>')
+                    entry.unbind('<FocusOut>')
+
+                # Destruir container
+                cc_data['container'].destroy()
+            except:
+                pass  # Widget ya destruido
+
+        self.cc_entries.clear()
+        self.next_cc_id = 0
+        self.update_cc_counter()
+
+    def _load_config_once(self):
+        """🚀 MEJORA #1: Carga la configuración UNA SOLA VEZ al inicio de la aplicación.
+
+        Este método reemplaza la carga en show_subtab() para prevenir duplicados.
+        Se ejecuta automáticamente 100ms después de crear la interfaz.
+        """
+        try:
+            print("[DEBUG] _load_config_once: Iniciando carga única de configuración...")
+
+            # 🔒 Protección contra llamadas múltiples
+            if self.config_loaded or self.is_loading:
+                print(f"[DEBUG] _load_config_once: Ya cargado (config_loaded={self.config_loaded}, is_loading={self.is_loading})")
+                return
+
+            self.is_loading = True
+            self.ui_state = self.UI_STATE_LOADING
+
+            config = self.config_tab.config_manager.load_config()
+            if not config:
+                print("[DEBUG] _load_config_once: No hay configuración guardada")
+                self.ui_state = self.UI_STATE_INTERACTIVE
+                self.is_loading = False
+                return
+
+            print(f"[DEBUG] _load_config_once: Configuración cargada: {list(config.keys())}")
+
+            # Limpiar CCs existentes (por si acaso)
+            self._cleanup_cc_widgets()
+
+            # Cargar credenciales
+            self.provider_var.set(config.get("provider", "Gmail"))
+            self.email_var.set(config.get("email", ""))
+            self.password_var.set(config.get("password", ""))
+
+            if config.get("email"):
+                self.update_credentials_status("🟡 Email cargado", "orange")
+                print(f"[DEBUG] _load_config_once: Email cargado: {config.get('email')}")
+
+            # Cargar destinatarios
+            recipients_config = config.get("recipients_config")
+            if recipients_config:
+                # Cargar destinatario principal
+                main_recipient = recipients_config.get("main_recipient", "")
+                self.main_email_var.set(main_recipient)
+                print(f"[DEBUG] _load_config_once: Destinatario principal: {main_recipient}")
+
+                # Cargar CCs usando el método silencioso
+                cc_recipients = recipients_config.get("cc_recipients", [])
+                print(f"[DEBUG] _load_config_once: Cargando {len(cc_recipients)} CCs...")
+
+                for i, cc_email in enumerate(cc_recipients):
+                    if cc_email.strip():
+                        cc_data = self._add_cc_field_silent(cc_email.strip())
+                        if cc_data:
+                            print(f"[DEBUG] _load_config_once: CC {i+1} cargado: {cc_email}")
+                        else:
+                            print(f"[DEBUG] _load_config_once: Error cargando CC {i+1}: {cc_email}")
+
+                if main_recipient:
+                    self.update_recipients_status("🟡 Destinatarios cargados", "orange")
+                    print(f"[DEBUG] _load_config_once: Total CCs cargados: {len(self.cc_entries)}")
+
+            # ✅ Marcar como cargado y cambiar a estado interactivo
+            self.config_loaded = True
+            self.ui_state = self.UI_STATE_INTERACTIVE
+            print("[DEBUG] _load_config_once: Carga completada exitosamente")
+
+        except Exception as e:
+            print(f"[ERROR] _load_config_once: Error cargando configuración: {e}")
+            import traceback
+            traceback.print_exc()
+            self.ui_state = self.UI_STATE_INTERACTIVE
+
+        finally:
+            self.is_loading = False
 
     def update_credentials_status(self, message, color):
         """Actualiza el estado de credenciales con colores modernos."""
