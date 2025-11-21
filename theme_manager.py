@@ -147,42 +147,42 @@ class ModernTheme:
         """Configura estilos de botones con efectos hover (optimizado)."""
         # Botón principal (Primary)
         style.configure("Primary.TButton",
-                       background=ModernTheme.SECONDARY,
-                       foreground=ModernTheme.TEXT_WHITE,
+                       background='#7EC8E3',
+                       foreground=ModernTheme.TEXT_PRIMARY,
                        font=ModernTheme.FONT_NORMAL,
                        borderwidth=0,
                        focuscolor='none',
                        padding=(15, 8))
 
         style.map("Primary.TButton",
-                 background=[('active', '#2980B9'), ('pressed', '#2471A3')],
-                 foreground=[('active', ModernTheme.TEXT_WHITE)])
+                 background=[('active', '#A8D8EA'), ('pressed', '#D0EBFA')],
+                 foreground=[('active', ModernTheme.TEXT_PRIMARY), ('pressed', ModernTheme.TEXT_PRIMARY)])
 
         # Botón de éxito (Success)
         style.configure("Success.TButton",
-                       background=ModernTheme.SUCCESS,
-                       foreground=ModernTheme.TEXT_WHITE,
+                       background='#7FD99A',
+                       foreground=ModernTheme.TEXT_PRIMARY,
                        font=ModernTheme.FONT_NORMAL,
                        borderwidth=0,
                        focuscolor='none',
                        padding=(15, 8))
 
         style.map("Success.TButton",
-                 background=[('active', '#229954'), ('pressed', '#1E8449')],
-                 foreground=[('active', ModernTheme.TEXT_WHITE)])
+                 background=[('active', '#A4E7B8'), ('pressed', '#C9F3D6')],
+                 foreground=[('active', ModernTheme.TEXT_PRIMARY), ('pressed', ModernTheme.TEXT_PRIMARY)])
 
         # Botón de peligro (Danger)
         style.configure("Danger.TButton",
-                       background=ModernTheme.DANGER,
-                       foreground=ModernTheme.TEXT_WHITE,
+                       background='#F5A6A0',
+                       foreground=ModernTheme.TEXT_PRIMARY,
                        font=ModernTheme.FONT_NORMAL,
                        borderwidth=0,
                        focuscolor='none',
                        padding=(15, 8))
 
         style.map("Danger.TButton",
-                 background=[('active', '#C0392B'), ('pressed', '#A93226')],
-                 foreground=[('active', ModernTheme.TEXT_WHITE)])
+                 background=[('active', '#F8C4C0'), ('pressed', '#FBE0DE')],
+                 foreground=[('active', ModernTheme.TEXT_PRIMARY), ('pressed', ModernTheme.TEXT_PRIMARY)])
 
         # Botón normal (default)
         style.configure("TButton",
@@ -195,6 +195,7 @@ class ModernTheme:
 
         style.map("TButton",
                  background=[('active', ModernTheme.BORDER_LIGHT), ('pressed', ModernTheme.BORDER)],
+                 foreground=[('active', ModernTheme.TEXT_PRIMARY), ('pressed', ModernTheme.TEXT_PRIMARY)],
                  bordercolor=[('active', ModernTheme.SECONDARY)])
 
         # Botón pequeño
@@ -205,6 +206,11 @@ class ModernTheme:
                        borderwidth=1,
                        focuscolor='none',
                        padding=(8, 4))
+
+        style.map("Small.TButton",
+                 background=[('active', ModernTheme.BORDER_LIGHT), ('pressed', ModernTheme.BORDER)],
+                 foreground=[('active', ModernTheme.TEXT_PRIMARY), ('pressed', ModernTheme.TEXT_PRIMARY)],
+                 bordercolor=[('active', ModernTheme.SECONDARY)])
 
     @staticmethod
     def _configure_entries(style):
@@ -244,14 +250,14 @@ class ModernTheme:
 
         style.configure("TNotebook.Tab",
                        background=ModernTheme.BG_SURFACE,
-                       foreground=ModernTheme.TEXT_SECONDARY,
+                       foreground=ModernTheme.TEXT_PRIMARY,
                        font=ModernTheme.FONT_NORMAL,
                        padding=[20, 10],
                        borderwidth=0)
 
         style.map("TNotebook.Tab",
-                 background=[('selected', ModernTheme.SECONDARY), ('active', ModernTheme.BORDER_LIGHT)],
-                 foreground=[('selected', ModernTheme.TEXT_WHITE), ('active', ModernTheme.PRIMARY)],
+                 background=[('selected', '#E8F4F8'), ('active', ModernTheme.BORDER_LIGHT)],
+                 foreground=[('selected', ModernTheme.TEXT_PRIMARY), ('active', ModernTheme.TEXT_PRIMARY)],
                  expand=[('selected', [1, 1, 1, 0])])
 
     @staticmethod
