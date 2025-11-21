@@ -1,10 +1,10 @@
 # main_window.py
 """
 Ventana principal simplificada de ContaFlow usando tkinter nativo.
-Interfaz limpia con navegación por pestañas sin auto-inicio del bot.
+Interfaz limpia sin auto-inicio del bot.
 Diseño moderno y optimizado con theme_manager.
 """
-# Archivos relacionados: automatizacion_tab.py, configuracion_tab.py, theme_manager.py
+# Archivos relacionados: automatizacion_tab.py, theme_manager.py
 
 import tkinter as tk
 from tkinter import ttk
@@ -98,13 +98,11 @@ class MainWindow(tk.Tk):
         self.notebook = ttk.Notebook(notebook_container)
         self.notebook.pack(fill=tk.BOTH, expand=True)
 
-        # Crear frames para cada pestaña
+        # Crear frame para pestaña de automatización
         self.automatizacion_frame = ttk.Frame(self.notebook)
-        self.configuracion_frame = ttk.Frame(self.notebook)
 
-        # Agregar pestañas al notebook con estilo moderno
+        # Agregar pestaña al notebook con estilo moderno
         self.notebook.add(self.automatizacion_frame, text="⚡ Automatización")
-        self.notebook.add(self.configuracion_frame, text="⚙️ Configuración")
 
         # Vincular evento de cambio de pestaña
         self.notebook.bind("<<NotebookTabChanged>>", self._on_tab_changed)
@@ -181,15 +179,6 @@ class MainWindow(tk.Tk):
             print(f"⚠️ Error inicializando automatización: {e}")
             self.tabs["automatizacion"] = None
 
-        try:
-            # Importar y crear pestaña de configuración
-            from configuracion_tab import ConfiguracionTab
-            self.tabs["configuracion"] = ConfiguracionTab(self.configuracion_frame)
-            print("✅ Pestaña de configuración inicializada")
-        except Exception as e:
-            print(f"⚠️ Error inicializando configuración: {e}")
-            self.tabs["configuracion"] = None
-
     def _on_tab_changed(self, event):
         """Maneja el cambio de pestaña."""
         try:
@@ -197,8 +186,6 @@ class MainWindow(tk.Tk):
 
             if "Automatización" in selected_tab:
                 self.show_tab("automatizacion")
-            elif "Configuración" in selected_tab:
-                self.show_tab("configuracion")
 
         except Exception as e:
             print(f"⚠️ Error en cambio de pestaña: {e}")
@@ -418,8 +405,6 @@ class MainWindow(tk.Tk):
             # Verificar pestañas críticas
             if not self.tabs.get('automatizacion'):
                 critical_issues.append('Pestaña de Automatización no disponible')
-            if not self.tabs.get('configuracion'):
-                critical_issues.append('Pestaña de Configuración no disponible')
 
             # Verificar configuración
             config_status = diagnosis['configuration_status']

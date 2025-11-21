@@ -11,7 +11,7 @@ from tkinter import ttk
 import threading
 from datetime import datetime
 from theme_manager import ModernTheme, create_modern_text_widget
-from email_config_modals import EmailConfigModal, RecipientsConfigModal
+from email_config_modals import EmailConfigModal, RecipientsConfigModal, SearchConfigModal, XmlConfigModal, CombustibleExclusionsModal
 
 
 class AutomatizacionUI:
@@ -116,6 +116,24 @@ class AutomatizacionUI:
                                     style="TButton")
         recipients_btn.pack(fill=tk.X, pady=(0, 8), ipady=8)
 
+        # Botón configurar búsqueda
+        search_btn = ttk.Button(buttons_frame, text="🔍 Configurar Búsqueda",
+                               command=self._handle_search_config_click,
+                               style="TButton")
+        search_btn.pack(fill=tk.X, pady=(0, 8), ipady=8)
+
+        # Botón configurar XML
+        xml_btn = ttk.Button(buttons_frame, text="📄 Configurar XML",
+                            command=self._handle_xml_config_click,
+                            style="TButton")
+        xml_btn.pack(fill=tk.X, pady=(0, 8), ipady=8)
+
+        # Botón exclusiones de combustible
+        combustible_btn = ttk.Button(buttons_frame, text="⛽ Exclusiones de Combustible",
+                                     command=self._handle_combustible_config_click,
+                                     style="TButton")
+        combustible_btn.pack(fill=tk.X, pady=(0, 8), ipady=8)
+
         # Botón limpiar log
         clear_btn = ttk.Button(buttons_frame, text="🗑️ Limpiar Log",
                                command=self._handle_clear_log_click,
@@ -181,6 +199,30 @@ class AutomatizacionUI:
         except Exception as e:
             print(f"Error abriendo modal de destinatarios: {e}")
             self.add_log_message(f"❌ Error abriendo configuración de destinatarios: {e}", "error")
+
+    def _handle_search_config_click(self):
+        """Maneja clic en configuración de búsqueda."""
+        try:
+            SearchConfigModal(self.parent)
+        except Exception as e:
+            print(f"Error abriendo modal de búsqueda: {e}")
+            self.add_log_message(f"❌ Error abriendo configuración de búsqueda: {e}", "error")
+
+    def _handle_xml_config_click(self):
+        """Maneja clic en configuración XML."""
+        try:
+            XmlConfigModal(self.parent)
+        except Exception as e:
+            print(f"Error abriendo modal XML: {e}")
+            self.add_log_message(f"❌ Error abriendo configuración XML: {e}", "error")
+
+    def _handle_combustible_config_click(self):
+        """Maneja clic en exclusiones de combustible."""
+        try:
+            CombustibleExclusionsModal(self.parent)
+        except Exception as e:
+            print(f"Error abriendo modal de combustible: {e}")
+            self.add_log_message(f"❌ Error abriendo configuración de combustible: {e}", "error")
 
     # ========== MÉTODOS DE LOGGING ==========
 
