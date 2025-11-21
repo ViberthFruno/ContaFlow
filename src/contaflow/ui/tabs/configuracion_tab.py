@@ -10,10 +10,10 @@ import tkinter as tk
 from tkinter import ttk
 import threading
 import re
-from email_manager import EmailManager
-from config_manager import ConfigManager
-from combustible_exclusions_tab import CombustibleExclusionsTab
-from theme_manager import ModernTheme
+from contaflow.email.email_manager import EmailManager
+from contaflow.config.config_manager import ConfigManager
+from contaflow.ui.tabs.combustible_exclusions_tab import CombustibleExclusionsTab
+from contaflow.ui.theme_manager import ModernTheme
 
 
 class ConfiguracionTab:
@@ -99,12 +99,12 @@ class ConfiguracionTab:
             print("✅ Sub-pestaña email y destinatarios inicializada")
 
             # Crear sub-pestaña de búsqueda
-            from busqueda_tab import BusquedaTab
+            from contaflow.ui.tabs.busqueda_tab import BusquedaTab
             self.subtabs["busqueda"] = BusquedaTab(self.busqueda_frame)
             print("✅ Sub-pestaña búsqueda inicializada")
 
             # Crear sub-pestaña de XML
-            from xml_tab import XmlTab
+            from contaflow.ui.tabs.xml_tab import XmlTab
             self.subtabs["xml"] = XmlTab(self.xml_frame)
             print("✅ Sub-pestaña XML inicializada")
 

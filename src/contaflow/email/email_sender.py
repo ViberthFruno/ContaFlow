@@ -17,7 +17,7 @@ from email.mime.base import MIMEBase
 from email import encoders
 from datetime import datetime
 from typing import List, Dict, Optional, Tuple
-from config_manager import ConfigManager
+from contaflow.config.config_manager import ConfigManager
 
 
 class EmailSender:
@@ -193,7 +193,7 @@ class EmailSender:
 
             # Importar y usar el generador de PDF
             try:
-                from pdf_generator import generate_processing_summary_pdf
+                from contaflow.processors.pdf_generator import generate_processing_summary_pdf
 
                 # Generar PDF temporal
                 timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
