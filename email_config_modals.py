@@ -196,9 +196,6 @@ class EmailConfigModal:
             self.update_status("🟢 Configuración guardada", "green")
             messagebox.showinfo("Éxito", "Configuración de email guardada correctamente")
 
-            # Cerrar modal después de 500ms
-            self.window.after(500, self.window.destroy)
-
         except Exception as e:
             self.update_status(f"🔴 Error: {str(e)}", "red")
             messagebox.showerror("Error", f"Error al guardar configuración: {str(e)}")
@@ -239,14 +236,12 @@ class RecipientsConfigModal:
 
         # Variables de destinatarios
         self.main_email_var = tk.StringVar()
-        self.cc_entries = []
-        self.max_ccs = 10
-        self.next_cc_id = 0
+        self.cc_text = None  # Widget Text para CC separados por comas
 
         # Crear ventana modal
         self.window = tk.Toplevel(parent)
         self.window.title("📧 Configurar Destinatarios")
-        self.window.geometry("550x550")
+        self.window.geometry("550x450")
         self.window.resizable(False, False)
 
         # Hacer modal (bloquear ventana principal)
@@ -295,24 +290,32 @@ class RecipientsConfigModal:
         main_entry.pack(fill=tk.X, pady=(0, 15))
 
         # Sección de CCs
-        cc_header_frame = ttk.Frame(fields_frame)
-        cc_header_frame.pack(fill=tk.X, pady=(0, 5))
+        ttk.Label(fields_frame, text="📋 Copias (CC) - Separar por comas:",
+                 font=ModernTheme.FONT_NORMAL).pack(anchor=tk.W, pady=(0, 5))
 
-        ttk.Label(cc_header_frame, text="📋 Copias (CC):",
-                 font=ModernTheme.FONT_NORMAL).pack(side=tk.LEFT)
-        self.cc_counter_label = ttk.Label(cc_header_frame, text=f"0/{self.max_ccs}",
-                                          foreground=ModernTheme.TEXT_SECONDARY,
-                                          font=ModernTheme.FONT_SMALL)
-        self.cc_counter_label.pack(side=tk.RIGHT)
+        # Text widget para CC (con scroll)
+        cc_frame = ttk.Frame(fields_frame)
+        cc_frame.pack(fill=tk.BOTH, expand=True, pady=(0, 10))
 
-        # Frame con scroll para CCs
-        self.create_cc_scroll_area(fields_frame)
+        cc_scrollbar = ttk.Scrollbar(cc_frame)
+        cc_scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
 
-        # Botón agregar CC
-        self.add_cc_btn = ttk.Button(fields_frame, text="➕ Agregar CC",
-                                     command=self.add_cc_field,
-                                     style="TButton")
-        self.add_cc_btn.pack(fill=tk.X, pady=(10, 0), ipady=4)
+        self.cc_text = tk.Text(cc_frame, height=6, font=ModernTheme.FONT_NORMAL,
+                               yscrollcommand=cc_scrollbar.set, wrap=tk.WORD)
+        self.cc_text.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+        cc_scrollbar.config(command=self.cc_text.yview)
+
+        # Nota informativa
+        note_frame = tk.Frame(fields_frame, bg=ModernTheme.INFO,
+                             highlightbackground=ModernTheme.SECONDARY,
+                             highlightthickness=1)
+        note_frame.pack(fill=tk.X, pady=(5, 0))
+
+        note_label = tk.Label(note_frame,
+                             text="💡 Ingrese los emails separados por comas. Ejemplo:\nemail1@example.com, email2@example.com",
+                             fg=ModernTheme.TEXT_WHITE, bg=ModernTheme.INFO,
+                             font=ModernTheme.FONT_SMALL, justify=tk.LEFT, pady=8, padx=10)
+        note_label.pack()
 
         # Estado
         self.status_label = tk.Label(fields_frame, text="",
@@ -336,100 +339,6 @@ class RecipientsConfigModal:
                                style="TButton")
         cancel_btn.pack(side=tk.LEFT, expand=True, fill=tk.X, padx=(5, 0), ipady=8)
 
-    def create_cc_scroll_area(self, parent):
-        """Crea el área con scroll para los campos CC."""
-        # Frame con canvas para scroll
-        scroll_frame = ttk.Frame(parent)
-        scroll_frame.pack(fill=tk.BOTH, expand=True, pady=(0, 5))
-
-        # Canvas y scrollbar
-        self.canvas = tk.Canvas(scroll_frame, bg="white", height=200)
-        scrollbar = ttk.Scrollbar(scroll_frame, orient="vertical", command=self.canvas.yview)
-
-        self.canvas.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
-        scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
-        self.canvas.configure(yscrollcommand=scrollbar.set)
-
-        # Frame interno para los CCs
-        self.cc_frame = ttk.Frame(self.canvas)
-        self.canvas.create_window((0, 0), window=self.cc_frame, anchor="nw")
-
-        # Configurar scroll
-        def configure_scroll_region(event):
-            self.canvas.configure(scrollregion=self.canvas.bbox("all"))
-
-        self.cc_frame.bind("<Configure>", configure_scroll_region)
-
-        # Mousewheel scroll
-        def _on_mousewheel(event):
-            self.canvas.yview_scroll(int(-1 * (event.delta / 120)), "units")
-
-        def _bind_mousewheel(event):
-            self.canvas.bind("<MouseWheel>", _on_mousewheel)
-
-        def _unbind_mousewheel(event):
-            self.canvas.unbind("<MouseWheel>")
-
-        self.canvas.bind("<Enter>", _bind_mousewheel)
-        self.canvas.bind("<Leave>", _unbind_mousewheel)
-
-    def add_cc_field(self):
-        """Agrega un nuevo campo CC."""
-        if len(self.cc_entries) >= self.max_ccs:
-            self.update_status("⚠️ Máximo 10 CCs permitidos", "orange")
-            return
-
-        # Generar ID único
-        cc_id = self.next_cc_id
-        self.next_cc_id += 1
-
-        # Frame para este CC
-        cc_container = ttk.Frame(self.cc_frame)
-        cc_container.pack(fill=tk.X, padx=5, pady=2)
-        cc_container.grid_columnconfigure(0, weight=1)
-
-        # Entry para email
-        cc_entry = ttk.Entry(cc_container, font=("Arial", 9))
-        cc_entry.grid(row=0, column=0, sticky="ew", padx=(0, 5))
-
-        # Botón eliminar
-        remove_btn = ttk.Button(cc_container, text="❌", width=3,
-                                command=lambda: self.remove_cc_field(cc_id))
-        remove_btn.grid(row=0, column=1)
-
-        # Guardar referencia
-        cc_data = {
-            'id': cc_id,
-            'container': cc_container,
-            'entry': cc_entry
-        }
-        self.cc_entries.append(cc_data)
-
-        self.update_cc_counter()
-
-    def remove_cc_field(self, cc_id):
-        """Elimina un campo CC usando ID único."""
-        cc_to_remove = None
-        for cc in self.cc_entries:
-            if cc['id'] == cc_id:
-                cc_to_remove = cc
-                break
-
-        if not cc_to_remove:
-            return
-
-        # Destruir el container
-        cc_to_remove['container'].destroy()
-
-        # Remover de la lista
-        self.cc_entries = [cc for cc in self.cc_entries if cc['id'] != cc_id]
-
-        self.update_cc_counter()
-
-    def update_cc_counter(self):
-        """Actualiza el contador de CCs."""
-        if self.cc_counter_label:
-            self.cc_counter_label.config(text=f"{len(self.cc_entries)}/{self.max_ccs}")
 
     def load_existing_config(self):
         """Carga configuración existente."""
@@ -442,14 +351,12 @@ class RecipientsConfigModal:
                     main_recipient = recipients_config.get("main_recipient", "")
                     self.main_email_var.set(main_recipient)
 
-                    # Cargar CCs
+                    # Cargar CCs en el Text widget (convertir lista a texto separado por comas)
                     cc_recipients = recipients_config.get("cc_recipients", [])
-                    for cc_email in cc_recipients:
-                        if cc_email.strip():
-                            self.add_cc_field()
-                            # Establecer valor en el último CC agregado
-                            if self.cc_entries:
-                                self.cc_entries[-1]['entry'].insert(0, cc_email.strip())
+                    if cc_recipients:
+                        cc_text = ", ".join(cc_recipients)
+                        self.cc_text.delete("1.0", tk.END)
+                        self.cc_text.insert("1.0", cc_text)
 
                     if main_recipient:
                         self.update_status("🟡 Configuración cargada", "orange")
@@ -479,19 +386,25 @@ class RecipientsConfigModal:
             self.update_status("🟢 Configuración guardada", "green")
             messagebox.showinfo("Éxito", "Configuración de destinatarios guardada correctamente")
 
-            # Cerrar modal después de 500ms
-            self.window.after(500, self.window.destroy)
-
         except Exception as e:
             self.update_status(f"🔴 Error: {str(e)}", "red")
             messagebox.showerror("Error", f"Error al guardar configuración: {str(e)}")
 
     def _get_recipients_data(self):
         """Obtiene los datos de destinatarios actuales."""
+        # Obtener texto del widget Text y parsear emails separados por comas
+        cc_text = self.cc_text.get("1.0", tk.END).strip()
+
+        # Parsear emails separados por comas
+        cc_recipients = []
+        if cc_text:
+            # Dividir por comas y limpiar espacios
+            cc_recipients = [email.strip() for email in cc_text.split(',')
+                           if email.strip()]
+
         return {
             'main_recipient': self.main_email_var.get().strip(),
-            'cc_recipients': [cc['entry'].get().strip() for cc in self.cc_entries
-                              if cc['entry'].get().strip()]
+            'cc_recipients': cc_recipients
         }
 
     def _validate_recipients_data(self, recipients_data):
