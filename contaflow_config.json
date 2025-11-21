@@ -1,0 +1,49 @@
+{
+  "version": "2.0",
+  "created": "2025-07-18T12:54:48.830907",
+  "last_updated": "2025-08-29T16:26:00.507043",
+  "provider": "Gmail",
+  "email": "optimizacion.procesos@fruno.com",
+  "password": "eW55d2NjYnlyYnZ4ZXRmdg==",
+  "search_criteria": {
+    "subject": "Cargador",
+    "search_type": "Contiene",
+    "today_only": true,
+    "attachments_only": true,
+    "excel_files": true,
+    "download_folder": "C:\\Users\\viberth.gonzalez\\Downloads\\ContaFlow"
+  },
+  "recipients_config": {
+    "main_recipient": "viberth.gonzalez@fruno.com",
+    "cc_recipients": []
+  },
+  "xml_config": {
+    "company_folders": {
+      "nargallo": "V:/3101263133",
+      "ventas_fruno": "V:/3101179613",
+      "creme_caramel": "V:/3102726951",
+      "su_laka": "V:/3101844574"
+    },
+    "commercial_activities": {
+      "nargallo": "523906",
+      "ventas_fruno": "523906",
+      "creme_caramel": "154102",
+      "su_laka": "524001"
+    },
+    "combustible_exclusions": {
+      "emitter_names": []
+    },
+    "output_folder": "C:\\Users\\viberth.gonzalez\\Downloads\\ContaFlow\\Procesados",
+    "delete_originals": true,
+    "auto_send": true,
+    "detailed_logs": true,
+    "manual_review_limit": 3
+  },
+  "message_config": {
+    "subject": "Reporte Automático de Contabilidad",
+    "body": "Estimado/a,\n\nSe adjuntan {total_archivos} archivo{s_plural} Excel procesado{s_plural} con {matches_totales} registros encontrados correspondientes al procesamiento XML empresarial.\n\n📎 Archivos incluidos:\n{detalle_archivos}\n\n📄 El PDF adjunto contiene el resumen detallado del procesamiento con información adicional sobre matches, revisiones manuales y estadísticas por empresa.\n\nEste es un correo generado automáticamente por ContaFlow. Por favor, no responda a este mensaje. En caso de cualquier inconveniente o consulta sobre los archivos procesados, comuníquese con el departamento de TI.\n\nSaludos cordiales,\nSistema ContaFlow\nProcesado el: {fecha_procesamiento}",
+    "send_pdf_summary": true
+  },
+  "auto_start_enabled": false,
+  "system_type": "simplified_cargador_search"
+}
