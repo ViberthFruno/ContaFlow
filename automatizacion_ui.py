@@ -56,48 +56,96 @@ class AutomatizacionUI:
         self.create_log_panel()
 
     def create_control_panel(self):
-        """Crea el panel de controles simplificado."""
+        """Crea el panel de controles simplificado con mejor diseño."""
         # Frame principal de controles
         control_frame = ttk.LabelFrame(self.main_frame, text="🎛️ Control del Bot", padding=15)
         control_frame.grid(row=0, column=0, padx=(0, 10), pady=0, sticky="nsew")
 
+        # Configurar grid para expansión
+        control_frame.grid_rowconfigure(1, weight=1)
+
         # Estado del bot
         self.create_status_section(control_frame)
+
+        # Separador decorativo
+        separator = ttk.Separator(control_frame, orient='horizontal')
+        separator.pack(fill=tk.X, pady=(10, 10))
+
+        # Información del sistema
+        self.create_info_section(control_frame)
 
         # Botones principales
         self.create_main_buttons(control_frame)
 
     def create_status_section(self, parent):
-        """Crea la sección de estado."""
-        status_frame = ttk.LabelFrame(parent, text="Estado del Bot", padding=10)
-        status_frame.pack(fill=tk.X, pady=(0, 15))
+        """Crea la sección de estado con mejor diseño visual."""
+        status_frame = ttk.LabelFrame(parent, text="Estado Actual", padding=15)
+        status_frame.pack(fill=tk.X, pady=(0, 10))
 
-        self.bot_status_label = ttk.Label(status_frame, text="🔴 Bot Detenido",
-                                          font=("Arial", 12, "bold"))
+        self.bot_status_label = ttk.Label(
+            status_frame,
+            text="🔴 Bot Detenido",
+            font=("Arial", 11, "bold"),
+            foreground="#e74c3c"
+        )
         self.bot_status_label.pack()
 
-    def create_main_buttons(self, parent):
-        """Crea los botones principales."""
-        buttons_frame = ttk.Frame(parent)
-        buttons_frame.pack(fill=tk.X, side=tk.BOTTOM, pady=(15, 0))
+    def create_info_section(self, parent):
+        """Crea la sección de información del sistema."""
+        info_frame = ttk.LabelFrame(parent, text="Configuración", padding=10)
+        info_frame.pack(fill=tk.X, pady=(0, 10))
 
-        # Botón toggle (iniciar/detener)
-        self.btn_toggle = ttk.Button(buttons_frame, text="▶️ Iniciar Bot",
-                                     command=self._handle_toggle_bot_click,
-                                     style="Accent.TButton")
-        self.btn_toggle.pack(fill=tk.X, pady=(0, 10))
+        # Información del monitoreo
+        info_items = [
+            ("⏰ Intervalo:", "1 minuto"),
+            ("🎯 Objetivo:", "Correo 'Cargador'"),
+            ("📄 Archivos:", "Excel (.xlsx/.xls)")
+        ]
+
+        for label_text, value_text in info_items:
+            item_frame = ttk.Frame(info_frame)
+            item_frame.pack(fill=tk.X, pady=2)
+
+            ttk.Label(
+                item_frame,
+                text=label_text,
+                font=("Arial", 9, "bold")
+            ).pack(side=tk.LEFT)
+
+            ttk.Label(
+                item_frame,
+                text=value_text,
+                font=("Arial", 9),
+                foreground="#7f8c8d"
+            ).pack(side=tk.LEFT, padx=(5, 0))
+
+    def create_main_buttons(self, parent):
+        """Crea los botones principales con mejor diseño."""
+        buttons_frame = ttk.Frame(parent)
+        buttons_frame.pack(fill=tk.X, side=tk.BOTTOM, pady=(10, 0))
+
+        # Botón toggle (iniciar/detener) más grande y destacado
+        self.btn_toggle = ttk.Button(
+            buttons_frame,
+            text="▶️ Iniciar Bot",
+            command=self._handle_toggle_bot_click
+        )
+        self.btn_toggle.pack(fill=tk.X, pady=(0, 10), ipady=5)
 
         # Separador
         separator = ttk.Separator(buttons_frame, orient='horizontal')
-        separator.pack(fill=tk.X, pady=(10, 10))
+        separator.pack(fill=tk.X, pady=(5, 10))
 
         # Botón limpiar log
-        clear_btn = ttk.Button(buttons_frame, text="🗑️ Limpiar Log",
-                               command=self._handle_clear_log_click)
-        clear_btn.pack(fill=tk.X, pady=(0, 5))
+        clear_btn = ttk.Button(
+            buttons_frame,
+            text="🗑️ Limpiar Log",
+            command=self._handle_clear_log_click
+        )
+        clear_btn.pack(fill=tk.X)
 
     def create_log_panel(self):
-        """Crea el panel de log de actividad."""
+        """Crea el panel de log de actividad con sistema de colores."""
         log_frame = ttk.LabelFrame(self.main_frame, text="📋 Log de Actividad", padding=10)
         log_frame.grid(row=0, column=1, padx=0, pady=0, sticky="nsew")
 
@@ -111,18 +159,33 @@ class AutomatizacionUI:
         text_frame.grid_columnconfigure(0, weight=1)
         text_frame.grid_rowconfigure(0, weight=1)
 
-        # Text widget
-        self.log_text = tk.Text(text_frame, wrap=tk.WORD, state=tk.DISABLED,
-                                font=("Consolas", 9), bg="white", fg="black")
+        # Text widget con mejor configuración
+        self.log_text = tk.Text(
+            text_frame,
+            wrap=tk.WORD,
+            state=tk.DISABLED,
+            font=("Courier", 9),
+            bg="#ffffff",
+            fg="#000000",
+            relief=tk.SUNKEN,
+            borderwidth=2
+        )
         self.log_text.grid(row=0, column=0, sticky="nsew")
+
+        # Configurar tags de colores para diferentes niveles de log
+        self.log_text.tag_config("error", foreground="#FF0000", font=("Courier", 9, "bold"))      # Rojo
+        self.log_text.tag_config("warning", foreground="#FF8C00", font=("Courier", 9, "bold"))    # Naranja
+        self.log_text.tag_config("info", foreground="#0066CC", font=("Courier", 9))               # Azul
+        self.log_text.tag_config("success", foreground="#008000", font=("Courier", 9, "bold"))    # Verde
+        self.log_text.tag_config("debug", foreground="#808080", font=("Courier", 9))              # Gris
 
         # Scrollbar
         scrollbar = ttk.Scrollbar(text_frame, orient=tk.VERTICAL, command=self.log_text.yview)
         scrollbar.grid(row=0, column=1, sticky="ns")
         self.log_text.config(yscrollcommand=scrollbar.set)
 
-        # Mensaje inicial
-        self.add_log_message("🚀 Sistema de búsqueda 'Cargador' iniciado", "info")
+        # Mensajes iniciales con colores
+        self.add_log_message("🚀 Sistema de búsqueda 'Cargador' iniciado", "success")
         self.add_log_message("⏰ Monitoreo configurado: 1 minuto (fijo)", "info")
         self.add_log_message("🎯 Objetivo: Correos 'Cargador' con archivos Excel", "info")
 
@@ -141,7 +204,7 @@ class AutomatizacionUI:
     # ========== MÉTODOS DE LOGGING ==========
 
     def add_log_message(self, message, msg_type="info"):
-        """Agrega mensaje al log de forma thread-safe."""
+        """Agrega mensaje al log de forma thread-safe con colores según tipo."""
 
         def _add_message_safe():
             try:
@@ -154,8 +217,11 @@ class AutomatizacionUI:
                 # Habilitar edición temporal
                 self.log_text.config(state=tk.NORMAL)
 
-                # Agregar mensaje
-                self.log_text.insert(tk.END, formatted_message)
+                # Determinar el tag según el tipo de mensaje
+                tag = msg_type if msg_type in ["error", "warning", "info", "success", "debug"] else "info"
+
+                # Agregar mensaje con el color correspondiente
+                self.log_text.insert(tk.END, formatted_message, tag)
 
                 # Limitar líneas (mantener últimas 1000)
                 content = self.log_text.get("1.0", tk.END)
@@ -190,7 +256,7 @@ class AutomatizacionUI:
                 self.log_text.config(state=tk.NORMAL)
                 self.log_text.delete("1.0", tk.END)
                 self.log_text.config(state=tk.DISABLED)
-                self.add_log_message("🗑️ Log limpiado", "info")
+                self.add_log_message("🗑️ Log limpiado correctamente", "warning")
                 self.add_log_message("🎯 Sistema: Búsqueda 'Cargador' + Excel", "info")
         except Exception as e:
             print(f"Error limpiando log: {e}")
@@ -198,42 +264,53 @@ class AutomatizacionUI:
     # ========== MÉTODOS DE ACTUALIZACIÓN DE UI ==========
 
     def update_bot_status(self, status_text, color):
-        """Actualiza el estado visual del bot."""
+        """Actualiza el estado visual del bot con colores mejorados."""
         try:
-            self.bot_status_label.config(text=status_text, foreground=color)
+            # Mapeo de colores a hex para mejor visualización
+            color_map = {
+                "green": "#27ae60",
+                "red": "#e74c3c",
+                "orange": "#f39c12",
+                "blue": "#3498db"
+            }
+            hex_color = color_map.get(color, color)
+            self.bot_status_label.config(text=status_text, foreground=hex_color)
         except Exception as e:
             print(f"Error actualizando status: {e}")
 
     def update_ui_for_running_state(self):
-        """Actualiza UI para estado 'corriendo'."""
+        """Actualiza UI para estado 'corriendo' con diseño mejorado."""
         try:
-            self.update_bot_status("🟢 Bot Activo - Monitoreo cada 1 min", "green")
+            self.update_bot_status("🟢 Bot Activo - Monitoreo Activo", "green")
             self.btn_toggle.config(text="⏹️ Detener Bot", state=tk.NORMAL)
+            self.add_log_message("✅ Bot iniciado correctamente", "success")
         except Exception as e:
             print(f"Error actualizando UI running: {e}")
 
     def update_ui_for_stopping_state(self):
-        """Actualiza UI para estado 'deteniéndose'."""
+        """Actualiza UI para estado 'deteniéndose' con mejor feedback."""
         try:
-            self.update_bot_status("🟡 Deteniendo...", "orange")
+            self.update_bot_status("🟡 Deteniendo Sistema...", "orange")
             self.btn_toggle.config(text="⏳ Deteniendo...", state=tk.DISABLED)
+            self.add_log_message("⏸️ Deteniendo bot...", "warning")
         except Exception as e:
             print(f"Error actualizando UI stopping: {e}")
 
     def update_ui_for_stopped_state(self):
-        """Actualiza UI para estado 'detenido'."""
+        """Actualiza UI para estado 'detenido' con confirmación."""
         try:
             self.update_bot_status("🔴 Bot Detenido", "red")
             self.btn_toggle.config(text="▶️ Iniciar Bot", state=tk.NORMAL)
+            self.add_log_message("⏹️ Bot detenido", "warning")
         except Exception as e:
             print(f"Error actualizando UI stopped: {e}")
 
     def reset_stop_state(self, bot_running):
-        """Resetea estado de parada."""
+        """Resetea estado de parada con actualización visual completa."""
         try:
             if bot_running:
                 text = "⏹️ Detener Bot"
-                status = "🟢 Bot Activo - Monitoreo cada 1 min"
+                status = "🟢 Bot Activo - Monitoreo Activo"
                 color = "green"
             else:
                 text = "▶️ Iniciar Bot"

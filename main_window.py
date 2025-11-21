@@ -6,7 +6,8 @@ Interfaz limpia con navegación por pestañas sin auto-inicio del bot.
 # Archivos relacionados: automatizacion_tab.py, configuracion_tab.py
 
 import tkinter as tk
-from tkinter import ttk
+from tkinter import ttk, messagebox
+import tkinter.font as tkfont
 import sys
 import threading
 import time
@@ -24,6 +25,9 @@ class MainWindow(tk.Tk):
         self.tabs = {}
         self.current_tab = None
 
+        # Configurar fuentes globales
+        self.setup_fonts()
+
         # Configurar la ventana
         self.setup_window()
 
@@ -38,16 +42,36 @@ class MainWindow(tk.Tk):
 
         print("✅ ContaFlow v2.0 - Sistema Simplificado iniciado correctamente")
 
+    def setup_fonts(self):
+        """Configura las fuentes globales de la aplicación."""
+        try:
+            # Fuente por defecto
+            default_font = tkfont.nametofont("TkDefaultFont")
+            default_font.configure(family="Arial", size=10)
+
+            # Fuente de texto
+            text_font = tkfont.nametofont("TkTextFont")
+            text_font.configure(family="Arial", size=10)
+
+            # Fuente de menú
+            menu_font = tkfont.nametofont("TkMenuFont")
+            menu_font.configure(family="Arial", size=10)
+
+            print("✓ Fuentes configuradas correctamente")
+        except Exception as e:
+            print(f"⚠️ Error configurando fuentes: {e}")
+
     def setup_window(self):
         """Configura las propiedades básicas de la ventana."""
         try:
             # Título y dimensiones
-            self.title("Bot ContaFlow")
-            self.geometry("1200x800")
+            self.title("API iFR Pro + Bot de Correo - Sistema Integrado")
+            self.geometry("900x600")
+            self.configure(bg="#f0f0f0")  # Fondo gris claro
             self.minsize(800, 500)
 
             # Centrar ventana
-            self.center_window()
+            self._center_window()
 
             # Configurar cierre
             self.protocol("WM_DELETE_WINDOW", self.on_closing)
@@ -61,38 +85,60 @@ class MainWindow(tk.Tk):
         except Exception as e:
             print(f"⚠️ Error configurando ventana: {e}")
 
-    def center_window(self):
-        """Centra la ventana en la pantalla."""
+    def _center_window(self):
+        """Centra la ventana en la pantalla usando el método estándar."""
         try:
             self.update_idletasks()
             width = self.winfo_width()
             height = self.winfo_height()
             x = (self.winfo_screenwidth() // 2) - (width // 2)
             y = (self.winfo_screenheight() // 2) - (height // 2)
-            self.geometry(f"{width}x{height}+{x}+{y}")
+            self.geometry(f'{width}x{height}+{x}+{y}')
         except Exception as e:
             print(f"⚠️ Error centrando ventana: {e}")
 
+    def center_window(self):
+        """Alias para compatibilidad con código existente."""
+        self._center_window()
+
     def create_interface(self):
         """Crea la interfaz principal con notebook de pestañas."""
-        # Frame principal
-        main_frame = ttk.Frame(self)
-        main_frame.pack(fill=tk.BOTH, expand=True, padx=10, pady=10)
+        # Frame principal con configuración de grid
+        main_frame = ttk.Frame(self, padding="10")
+        main_frame.pack(fill=tk.BOTH, expand=True)
+        main_frame.columnconfigure(0, weight=1)
+        main_frame.rowconfigure(1, weight=1)
 
-        # Título principal grande
-        title_label = ttk.Label(main_frame, text="Bot ContaFlow", font=("Arial", 24, "bold"))
-        title_label.pack(pady=(0, 20))
+        # Título principal grande con mejor estilo
+        title_frame = ttk.Frame(main_frame)
+        title_frame.grid(row=0, column=0, sticky="ew", pady=(0, 10))
 
-        # Notebook para pestañas
+        title_label = ttk.Label(
+            title_frame,
+            text="🤖 Bot ContaFlow - Sistema Integrado",
+            font=("Arial", 18, "bold"),
+            foreground="#2c3e50"
+        )
+        title_label.pack()
+
+        subtitle_label = ttk.Label(
+            title_frame,
+            text="API iFR Pro + Automatización de Correos",
+            font=("Arial", 10),
+            foreground="#7f8c8d"
+        )
+        subtitle_label.pack()
+
+        # Notebook para pestañas con mejor configuración
         self.notebook = ttk.Notebook(main_frame)
-        self.notebook.pack(fill=tk.BOTH, expand=True)
+        self.notebook.grid(row=1, column=0, sticky="nsew")
 
         # Crear frames para cada pestaña
-        self.automatizacion_frame = ttk.Frame(self.notebook)
-        self.configuracion_frame = ttk.Frame(self.notebook)
+        self.automatizacion_frame = ttk.Frame(self.notebook, padding="10")
+        self.configuracion_frame = ttk.Frame(self.notebook, padding="10")
 
-        # Agregar pestañas al notebook
-        self.notebook.add(self.automatizacion_frame, text="⚡ Automatización")
+        # Agregar pestañas al notebook con mejor texto
+        self.notebook.add(self.automatizacion_frame, text="⚡ Panel Principal")
         self.notebook.add(self.configuracion_frame, text="⚙️ Configuración")
 
         # Vincular evento de cambio de pestaña
@@ -155,21 +201,36 @@ class MainWindow(tk.Tk):
             print(f"⚠️ Error mostrando pestaña {tab_name}: {e}")
 
     def on_closing(self):
-        """Maneja el cierre de la aplicación simplificado."""
+        """Maneja el cierre de la aplicación con confirmación modal."""
         try:
+            # Verificar si el bot está corriendo
+            automatizacion_tab = self.tabs.get('automatizacion')
+            bot_running = False
+
+            if automatizacion_tab and hasattr(automatizacion_tab, 'bot_running'):
+                bot_running = automatizacion_tab.bot_running
+
+            # Si el bot está corriendo, pedir confirmación
+            if bot_running:
+                if not messagebox.askyesno(
+                    "Confirmar Cierre",
+                    "El bot está en ejecución.\n\n¿Está seguro que desea cerrar la aplicación?",
+                    icon='warning'
+                ):
+                    return
+
             print("🔄 Cerrando ContaFlow v2.0...")
 
             # Detener bot si está ejecutándose
-            automatizacion_tab = self.tabs.get('automatizacion')
-            if automatizacion_tab and hasattr(automatizacion_tab, 'bot_running'):
-                if automatizacion_tab.bot_running:
-                    print("⏹️ Deteniendo bot...")
-                    automatizacion_tab.stop_bot()
+            if bot_running and automatizacion_tab:
+                print("⏹️ Deteniendo bot...")
+                automatizacion_tab.stop_bot()
 
-                    # Esperar un momento para que se detenga correctamente
-                    time.sleep(1)
+                # Esperar un momento para que se detenga correctamente
+                time.sleep(1)
 
             print("✅ ContaFlow v2.0 cerrado correctamente")
+            self.quit()
             self.destroy()
 
         except Exception as e:
