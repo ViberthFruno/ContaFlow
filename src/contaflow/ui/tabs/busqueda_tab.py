@@ -9,8 +9,8 @@ Diseño moderno optimizado.
 import tkinter as tk
 from tkinter import ttk, filedialog
 import os
-from contaflow.config.config_manager import ConfigManager
-from contaflow.ui.theme_manager import ModernTheme
+from config.config_manager import ConfigManager
+from ui.theme_manager import ModernTheme
 
 
 class BusquedaTab:

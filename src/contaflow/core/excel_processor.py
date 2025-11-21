@@ -27,7 +27,7 @@ except ImportError:
 
 # Importar el procesador de PDFs de Correos
 try:
-    from contaflow.processors.pdf_processor import CorreosPDFProcessor, create_correos_pdf_processor
+    from processors.pdf_processor import CorreosPDFProcessor, create_correos_pdf_processor
 
     PDF_PROCESSOR_AVAILABLE = True
 except ImportError:
@@ -36,7 +36,7 @@ except ImportError:
 
 # Importar el nuevo procesador de OtroTexto para extracción de placas
 try:
-    from contaflow.processors.otro_texto_processor import create_otro_texto_processor
+    from processors.otro_texto_processor import create_otro_texto_processor
 
     OTRO_TEXTO_PROCESSOR_AVAILABLE = True
 except ImportError:
@@ -554,7 +554,7 @@ class ExcelProcessor:
         """Construye índices XML separados para cada empresa usando rutas dinámicas automáticas con manejo graceful de carpetas faltantes y soporte para extracción de placas desde OtroTexto."""
 
         # Importar ConfigManager para usar las funciones de rutas dinámicas
-        from contaflow.config.config_manager import ConfigManager
+        from config.config_manager import ConfigManager
         config_manager = ConfigManager()
 
         current_date = datetime.now()

@@ -9,9 +9,10 @@ Diseño moderno y optimizado con theme_manager.
 import tkinter as tk
 from tkinter import ttk
 import sys
+import os
 import threading
 import time
-from contaflow.ui.theme_manager import ModernTheme, apply_modern_theme
+from ui.theme_manager import ModernTheme, apply_modern_theme
 
 
 class MainWindow(tk.Tk):
@@ -63,7 +64,9 @@ class MainWindow(tk.Tk):
 
             # Configurar icono (opcional)
             try:
-                self.iconbitmap("icon.ico")
+                icon_path = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(__file__)))), "assets", "icon.ico")
+                if os.path.exists(icon_path):
+                    self.iconbitmap(icon_path)
             except:
                 pass
 
@@ -174,7 +177,7 @@ class MainWindow(tk.Tk):
         """Inicializa las pestañas del sistema simplificado."""
         try:
             # Importar y crear pestaña de automatización
-            from contaflow.ui.tabs.automatizacion_tab import AutomatizacionTab
+            from ui.tabs.automatizacion_tab import AutomatizacionTab
             self.tabs["automatizacion"] = AutomatizacionTab(self.automatizacion_frame)
             print("✅ Pestaña de automatización inicializada - Sistema simplificado")
         except Exception as e:
@@ -183,7 +186,7 @@ class MainWindow(tk.Tk):
 
         try:
             # Importar y crear pestaña de configuración
-            from contaflow.ui.tabs.configuracion_tab import ConfiguracionTab
+            from ui.tabs.configuracion_tab import ConfiguracionTab
             self.tabs["configuracion"] = ConfiguracionTab(self.configuracion_frame)
             print("✅ Pestaña de configuración inicializada")
         except Exception as e:
@@ -323,7 +326,7 @@ class MainWindow(tk.Tk):
         try:
             # Intentar obtener información de configuración
             try:
-                from contaflow.config.config_manager import ConfigManager
+                from config.config_manager import ConfigManager
                 config_manager = ConfigManager()
                 config = config_manager.load_config()
 

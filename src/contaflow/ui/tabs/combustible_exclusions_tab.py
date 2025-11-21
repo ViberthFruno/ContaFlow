@@ -10,8 +10,8 @@ from tkinter import ttk
 from typing import List
 import unicodedata
 
-from contaflow.config.config_manager import ConfigManager
-from contaflow.ui.theme_manager import ModernTheme
+from config.config_manager import ConfigManager
+from ui.theme_manager import ModernTheme
 
 
 class CombustibleExclusionsTab:

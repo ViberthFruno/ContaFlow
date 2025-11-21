@@ -38,31 +38,19 @@ Esta herramienta está diseñada para:
 
 ## 🛠️ Instalación
 
-### Opción 1: Instalación con pip (Recomendado)
-1. Clone o descargue el repositorio del proyecto
-2. Navegue al directorio del proyecto
-3. Instale el paquete en modo desarrollo:
-```bash
-pip install -e .
-```
-4. Ejecute la aplicación:
-```bash
-contaflow
-```
-
-### Opción 2: Ejecución directa
+### Opción 1: Ejecución directa (Recomendado)
 1. Asegúrese de tener Python 3.7 o posterior
 2. Clone o descargue el repositorio del proyecto
 3. Instale las dependencias:
 ```bash
 pip install openpyxl pandas pdfplumber pywin32
 ```
-4. Ejecute la aplicación usando el script de entrada:
+4. Ejecute la aplicación:
 ```bash
-python contaflow.py
+python run.py
 ```
 
-### Opción 3: Ejecutable compilado
+### Opción 2: Ejecutable compilado
 1. Descargue `ContaFlow.exe` desde la ubicación interna compartida
 2. Colóquelo en la ubicación deseada de su sistema
 3. Ejecute la aplicación con doble clic

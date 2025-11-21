@@ -17,7 +17,9 @@ class ConfigManager:
     """Clase para gestionar las configuraciones de la aplicación con rutas dinámicas XML (sin auto-inicio)."""
 
     def __init__(self):
-        self.config_file = "contaflow_config.json"
+        # Obtener la ruta del proyecto (4 niveles arriba desde config_manager.py)
+        project_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
+        self.config_file = os.path.join(project_root, "config", "contaflow_config.json")
         self._lock = threading.Lock()
         self._ensure_files_exist()
 

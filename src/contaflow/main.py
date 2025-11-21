@@ -42,7 +42,7 @@ def main():
         print("📱 Creando ventana principal...")
 
         # Importar después de configurar para evitar problemas
-        from contaflow.ui.main_window import MainWindow
+        from ui.main_window import MainWindow
 
         # Crear y configurar la ventana principal
         app = MainWindow()
