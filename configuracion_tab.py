@@ -37,7 +37,7 @@ class ConfiguracionTab:
         self.initialize_subtabs()
 
         # Mostrar sub-pestaña por defecto
-        self.show_subtab("email_destinatarios")
+        self.show_subtab("busqueda")
 
     def create_interface(self):
         """Crea la interfaz principal."""
@@ -65,7 +65,7 @@ class ConfiguracionTab:
                               fg=ModernTheme.PRIMARY)
         title_label.pack(pady=(10, 5))
 
-        subtitle_label = tk.Label(title_frame, text="Gestiona todas las configuraciones del bot",
+        subtitle_label = tk.Label(title_frame, text="Búsqueda, XML y Exclusiones (Email en Automatización)",
                                  font=ModernTheme.FONT_NORMAL,
                                  bg=ModernTheme.BG_SURFACE,
                                  fg=ModernTheme.TEXT_SECONDARY)
@@ -76,14 +76,12 @@ class ConfiguracionTab:
         self.subtab_notebook = ttk.Notebook(self.main_frame)
         self.subtab_notebook.grid(row=1, column=0, padx=10, pady=5, sticky="nsew")
 
-        # Crear frames para cada sub-pestaña (ahora 4 pestañas)
-        self.email_destinatarios_frame = ttk.Frame(self.subtab_notebook)
+        # Crear frames para cada sub-pestaña (ahora 3 pestañas - Email movido a Automatización)
         self.busqueda_frame = ttk.Frame(self.subtab_notebook)
         self.xml_frame = ttk.Frame(self.subtab_notebook)
         self.combustible_exclusions_frame = ttk.Frame(self.subtab_notebook)
 
         # Agregar pestañas al notebook
-        self.subtab_notebook.add(self.email_destinatarios_frame, text="📧 Email y Destinatarios")
         self.subtab_notebook.add(self.busqueda_frame, text="🔍 Búsqueda")
         self.subtab_notebook.add(self.xml_frame, text="🗂️ XML")
         self.subtab_notebook.add(self.combustible_exclusions_frame, text="⛽️ Exclusiones Combustible")
@@ -94,10 +92,6 @@ class ConfiguracionTab:
     def initialize_subtabs(self):
         """Inicializa las sub-pestañas."""
         try:
-            # Crear sub-pestaña combinada de email y destinatarios
-            self.subtabs["email_destinatarios"] = EmailDestinatariosSubTab(self.email_destinatarios_frame, self)
-            print("✅ Sub-pestaña email y destinatarios inicializada")
-
             # Crear sub-pestaña de búsqueda
             from busqueda_tab import BusquedaTab
             self.subtabs["busqueda"] = BusquedaTab(self.busqueda_frame)
@@ -121,7 +115,7 @@ class ConfiguracionTab:
         """Maneja cambio de sub-pestaña."""
         try:
             selected_index = event.widget.index('current')
-            subtab_names = ["email_destinatarios", "busqueda", "xml", "combustible_exclusiones"]
+            subtab_names = ["busqueda", "xml", "combustible_exclusiones"]
 
             if 0 <= selected_index < len(subtab_names):
                 self.show_subtab(subtab_names[selected_index])
@@ -158,12 +152,8 @@ class ConfiguracionTab:
             print(f"⚠️ Error mostrando sub-pestaña {subtab_name}: {e}")
 
     def load_existing_config(self):
-        """Carga configuración existente para la pestaña combinada."""
-        if self.current_subtab == "email_destinatarios" and self.subtabs["email_destinatarios"]:
-            try:
-                self.subtabs["email_destinatarios"].load_existing_config()
-            except Exception as e:
-                print(f"⚠️ Error cargando configuración: {e}")
+        """Carga configuración existente (ya no necesario - email movido a Automatización)."""
+        pass
 
     def show(self):
         """Muestra la pestaña de configuración."""
