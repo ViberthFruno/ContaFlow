@@ -103,13 +103,10 @@ python main.py
 | `email_manager.py` | Gestor de conexiones y operaciones de correo |
 | `excel_processor.py` | Procesador de Excel y XML empresarial con rutas dinámicas |
 | `email_sender.py` | Sistema de envío consolidado de correos |
-| `config_manager.py` | Gestor de configuraciones con soporte para auto-inicio |
-| `busqueda_tab.py` | Sub-pestaña de configuración de búsqueda |
-| `xml_tab.py` | Sub-pestaña de configuración XML empresarial |
-| `destinatarios_tab.py` | Sub-pestaña de configuración de destinatarios |
-| `mensaje_tab.py` | Sub-pestaña de configuración de mensajes |
+| `config_manager.py` | Gestor de configuraciones simplificado |
+| `email_config_modals.py` | Modales de configuración (Email, Destinatarios, Búsqueda, XML, Combustible) |
 | `pdf_processor.py` | Procesador especializado para PDFs de Correos Costa Rica |
-| `styles.py` | Estilos y constantes de la interfaz gráfica |
+| `theme_manager.py` | Gestor de temas y estilos modernos de la interfaz |
 
 ---
 

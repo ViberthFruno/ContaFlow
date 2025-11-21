@@ -36,11 +36,8 @@ class MainWindow(tk.Tk):
         # Crear interfaz
         self.create_interface()
 
-        # Inicializar pestañas
+        # Inicializar interfaz de automatización
         self.initialize_tabs()
-
-        # Mostrar pestaña por defecto
-        self.show_tab("automatizacion")
 
         # Actualizar barra de estado
         self.update_status("🟢 Sistema listo", "success")
@@ -83,7 +80,7 @@ class MainWindow(tk.Tk):
             print(f"⚠️ Error centrando ventana: {e}")
 
     def create_interface(self):
-        """Crea la interfaz principal moderna con notebook de pestañas."""
+        """Crea la interfaz principal moderna simplificada."""
         # Frame principal
         main_frame = ttk.Frame(self)
         main_frame.pack(fill=tk.BOTH, expand=True)
@@ -91,21 +88,13 @@ class MainWindow(tk.Tk):
         # Header con título moderno
         self.create_header(main_frame)
 
-        # Notebook para pestañas (con estilo moderno)
-        notebook_container = ttk.Frame(main_frame)
-        notebook_container.pack(fill=tk.BOTH, expand=True, padx=10, pady=(0, 5))
+        # Frame de contenido (sin notebook, interfaz directa)
+        content_container = ttk.Frame(main_frame)
+        content_container.pack(fill=tk.BOTH, expand=True, padx=10, pady=(0, 5))
 
-        self.notebook = ttk.Notebook(notebook_container)
-        self.notebook.pack(fill=tk.BOTH, expand=True)
-
-        # Crear frame para pestaña de automatización
-        self.automatizacion_frame = ttk.Frame(self.notebook)
-
-        # Agregar pestaña al notebook con estilo moderno
-        self.notebook.add(self.automatizacion_frame, text="⚡ Automatización")
-
-        # Vincular evento de cambio de pestaña
-        self.notebook.bind("<<NotebookTabChanged>>", self._on_tab_changed)
+        # Crear frame para automatización (directamente sin pestañas)
+        self.automatizacion_frame = ttk.Frame(content_container)
+        self.automatizacion_frame.pack(fill=tk.BOTH, expand=True)
 
         # Barra de estado moderna
         self.create_status_bar(main_frame)
@@ -118,7 +107,7 @@ class MainWindow(tk.Tk):
 
         # Título principal
         title_label = tk.Label(header_frame,
-                              text="🤖 Bot ContaFlow",
+                              text="🤖 ContaFlow - Bot de Automatización",
                               font=ModernTheme.FONT_TITLE,
                               bg=ModernTheme.PRIMARY,
                               fg=ModernTheme.TEXT_WHITE)
@@ -169,49 +158,16 @@ class MainWindow(tk.Tk):
         self.status_label.config(text=f"{icon} {message}")
 
     def initialize_tabs(self):
-        """Inicializa las pestañas del sistema simplificado."""
+        """Inicializa la interfaz de automatización."""
         try:
-            # Importar y crear pestaña de automatización
+            # Importar y crear interfaz de automatización
             from automatizacion_tab import AutomatizacionTab
             self.tabs["automatizacion"] = AutomatizacionTab(self.automatizacion_frame)
-            print("✅ Pestaña de automatización inicializada - Sistema simplificado")
+            self.current_tab = "automatizacion"
+            print("✅ Interfaz de automatización inicializada")
         except Exception as e:
             print(f"⚠️ Error inicializando automatización: {e}")
             self.tabs["automatizacion"] = None
-
-    def _on_tab_changed(self, event):
-        """Maneja el cambio de pestaña."""
-        try:
-            selected_tab = event.widget.tab('current')['text']
-
-            if "Automatización" in selected_tab:
-                self.show_tab("automatizacion")
-
-        except Exception as e:
-            print(f"⚠️ Error en cambio de pestaña: {e}")
-
-    def show_tab(self, tab_name):
-        """Muestra la pestaña especificada."""
-        try:
-            if tab_name not in self.tabs or self.tabs[tab_name] is None:
-                print(f"⚠️ Pestaña no disponible: {tab_name}")
-                return
-
-            if self.current_tab == tab_name:
-                return
-
-            # Ocultar pestaña actual
-            if self.current_tab and self.current_tab in self.tabs and self.tabs[self.current_tab]:
-                if hasattr(self.tabs[self.current_tab], 'hide'):
-                    self.tabs[self.current_tab].hide()
-
-            # Mostrar nueva pestaña
-            if hasattr(self.tabs[tab_name], 'show'):
-                self.tabs[tab_name].show()
-                self.current_tab = tab_name
-
-        except Exception as e:
-            print(f"⚠️ Error mostrando pestaña {tab_name}: {e}")
 
     def on_closing(self):
         """Maneja el cierre de la aplicación simplificado."""

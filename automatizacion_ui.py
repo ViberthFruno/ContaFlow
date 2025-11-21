@@ -68,74 +68,101 @@ class AutomatizacionUI:
     def create_top_section(self):
         """Crea la sección superior con el botón principal de iniciar/detener bot."""
         # Frame superior grande que ocupa todo el ancho
-        top_frame = ttk.LabelFrame(self.main_frame, text="🤖 Bot de Automatización",
+        top_frame = ttk.LabelFrame(self.main_frame, text="🎛️ Control Principal",
                                    padding=30, style="Modern.TLabelframe")
         top_frame.grid(row=0, column=0, columnspan=2, padx=0, pady=(0, 15), sticky="ew")
 
         # Configurar para centrar contenido
         top_frame.grid_columnconfigure(0, weight=1)
 
-        # Estado del bot (sin fondo)
+        # Estado del bot
         self.bot_status_label = tk.Label(top_frame, text="🔴 Bot Detenido",
-                                         font=("Segoe UI", 12, "bold"),
+                                         font=("Segoe UI", 14, "bold"),
                                          bg=ModernTheme.BG_CARD,
                                          fg=ModernTheme.DANGER,
                                          padx=10, pady=10)
         self.bot_status_label.grid(row=0, column=0, pady=(0, 15))
 
-        # Botón toggle (iniciar/detener) - Más pequeño
+        # Botón toggle (iniciar/detener) - Grande y prominente
         self.btn_toggle = ttk.Button(top_frame, text="▶️ Iniciar Bot",
                                      command=self._handle_toggle_bot_click,
                                      style="Primary.TButton")
-        self.btn_toggle.grid(row=1, column=0, pady=(0, 10), ipadx=20, ipady=8)
+        self.btn_toggle.grid(row=1, column=0, pady=(0, 10), ipadx=30, ipady=12)
 
     def create_control_panel(self):
-        """Crea el panel de controles con botón de limpiar log."""
+        """Crea el panel de controles organizado por secciones."""
         # Frame principal de controles con estilo moderno
-        control_frame = ttk.LabelFrame(self.main_frame, text="🎛️ Control del Bot",
+        control_frame = ttk.LabelFrame(self.main_frame, text="⚙️ Configuración y Herramientas",
                                       padding=20, style="Modern.TLabelframe")
         control_frame.grid(row=1, column=0, padx=(0, 10), pady=0, sticky="nsew")
 
-        # Botones de control
+        # Botones de control organizados
         self.create_control_buttons(control_frame)
 
     def create_control_buttons(self, parent):
-        """Crea los botones de control."""
-        buttons_frame = ttk.Frame(parent)
-        buttons_frame.pack(fill=tk.X, side=tk.BOTTOM, pady=(10, 0))
+        """Crea los botones de control organizados por secciones."""
+        # Frame principal para todos los botones
+        buttons_container = ttk.Frame(parent)
+        buttons_container.pack(fill=tk.BOTH, expand=True)
+
+        # ========== SECCIÓN: CONFIGURACIÓN ==========
+        config_label = tk.Label(buttons_container,
+                               text="⚙️ CONFIGURACIÓN",
+                               font=("Segoe UI", 10, "bold"),
+                               bg=ModernTheme.BG_CARD,
+                               fg=ModernTheme.TEXT_PRIMARY,
+                               anchor=tk.W)
+        config_label.pack(fill=tk.X, pady=(0, 10))
+
+        # Frame para botones de configuración
+        config_frame = ttk.Frame(buttons_container)
+        config_frame.pack(fill=tk.X, pady=(0, 20))
 
         # Botón configuración de email
-        email_config_btn = ttk.Button(buttons_frame, text="⚙️ Configuración de Email",
+        email_config_btn = ttk.Button(config_frame, text="📧 Email",
                                       command=self._handle_email_config_click,
                                       style="TButton")
-        email_config_btn.pack(fill=tk.X, pady=(0, 8), ipady=8)
+        email_config_btn.pack(fill=tk.X, pady=(0, 6), ipady=8)
 
         # Botón configurar destinatarios
-        recipients_btn = ttk.Button(buttons_frame, text="📧 Configurar Destinatarios",
+        recipients_btn = ttk.Button(config_frame, text="👥 Destinatarios",
                                     command=self._handle_recipients_config_click,
                                     style="TButton")
-        recipients_btn.pack(fill=tk.X, pady=(0, 8), ipady=8)
+        recipients_btn.pack(fill=tk.X, pady=(0, 6), ipady=8)
 
         # Botón configurar búsqueda
-        search_btn = ttk.Button(buttons_frame, text="🔍 Configurar Búsqueda",
+        search_btn = ttk.Button(config_frame, text="🔍 Búsqueda",
                                command=self._handle_search_config_click,
                                style="TButton")
-        search_btn.pack(fill=tk.X, pady=(0, 8), ipady=8)
+        search_btn.pack(fill=tk.X, pady=(0, 6), ipady=8)
 
         # Botón configurar XML
-        xml_btn = ttk.Button(buttons_frame, text="📄 Configurar XML",
+        xml_btn = ttk.Button(config_frame, text="📄 XML",
                             command=self._handle_xml_config_click,
                             style="TButton")
-        xml_btn.pack(fill=tk.X, pady=(0, 8), ipady=8)
+        xml_btn.pack(fill=tk.X, pady=(0, 6), ipady=8)
 
         # Botón exclusiones de combustible
-        combustible_btn = ttk.Button(buttons_frame, text="⛽ Exclusiones de Combustible",
+        combustible_btn = ttk.Button(config_frame, text="⛽ Combustible",
                                      command=self._handle_combustible_config_click,
                                      style="TButton")
-        combustible_btn.pack(fill=tk.X, pady=(0, 8), ipady=8)
+        combustible_btn.pack(fill=tk.X, ipady=8)
+
+        # ========== SECCIÓN: UTILIDADES ==========
+        utilities_label = tk.Label(buttons_container,
+                                  text="🛠️ UTILIDADES",
+                                  font=("Segoe UI", 10, "bold"),
+                                  bg=ModernTheme.BG_CARD,
+                                  fg=ModernTheme.TEXT_PRIMARY,
+                                  anchor=tk.W)
+        utilities_label.pack(fill=tk.X, pady=(0, 10))
+
+        # Frame para botones de utilidades
+        utilities_frame = ttk.Frame(buttons_container)
+        utilities_frame.pack(fill=tk.X)
 
         # Botón limpiar log
-        clear_btn = ttk.Button(buttons_frame, text="🗑️ Limpiar Log",
+        clear_btn = ttk.Button(utilities_frame, text="🗑️ Limpiar Log",
                                command=self._handle_clear_log_click,
                                style="TButton")
         clear_btn.pack(fill=tk.X, ipady=8)

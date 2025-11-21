@@ -3,7 +3,7 @@
 Gestor de configuraciones simplificado para ContaFlow con rutas dinámicas XML.
 Maneja almacenamiento y recuperación segura de configuraciones sin auto-inicio del bot.
 """
-# Archivos relacionados: automatizacion_tab.py, configuracion_tab.py, xml_tab.py, busqueda_tab.py, email_sender.py
+# Archivos relacionados: automatizacion_tab.py, email_config_modals.py, email_sender.py
 
 import json
 import os
