@@ -17,13 +17,44 @@ class ConfigManager:
     """Clase para gestionar las configuraciones de la aplicación con rutas dinámicas XML (sin auto-inicio)."""
 
     def __init__(self):
-        self.config_file = "contaflow_config.json"
+        # 🔧 MEJORADO: Usar directorio de configuración en home del usuario
+        self.config_dir = self._get_config_directory()
+        self.config_file = os.path.join(self.config_dir, "contaflow_config.json")
         self._lock = threading.Lock()
         self._ensure_files_exist()
 
-    def _ensure_files_exist(self):
-        """Asegura que el archivo de configuración exista."""
+    def _get_config_directory(self):
+        """🆕 Obtiene o crea el directorio de configuración de ContaFlow.
+
+        Returns:
+            str: Ruta al directorio de configuración
+        """
+        # Intentar usar el directorio actual primero
+        current_dir = os.getcwd()
+        config_dir = os.path.join(current_dir, "config")
+
+        # Si no se puede crear en el directorio actual, usar el home del usuario
         try:
+            os.makedirs(config_dir, exist_ok=True)
+            # Verificar que podemos escribir
+            test_file = os.path.join(config_dir, ".test")
+            with open(test_file, 'w') as f:
+                f.write("test")
+            os.remove(test_file)
+            return config_dir
+        except (PermissionError, OSError):
+            # Fallback: usar directorio home del usuario
+            home_dir = os.path.expanduser("~")
+            config_dir = os.path.join(home_dir, ".contaflow")
+            os.makedirs(config_dir, exist_ok=True)
+            return config_dir
+
+    def _ensure_files_exist(self):
+        """Asegura que el directorio y archivo de configuración existan."""
+        try:
+            # 🔧 MEJORADO: Asegurar que el directorio existe
+            os.makedirs(self.config_dir, exist_ok=True)
+
             if not os.path.exists(self.config_file):
                 self._create_empty_config()
         except Exception as e:
@@ -251,8 +282,13 @@ Sistema: Búsqueda optimizada correos "Cargador" con archivos Excel"""
                 current_config['version'] = "2.0"
                 current_config['system_type'] = "simplified_cargador_search"
 
+                # 🔧 MEJORADO: Asegurar que el directorio existe antes de guardar
+                os.makedirs(self.config_dir, exist_ok=True)
+
                 with open(self.config_file, 'w', encoding='utf-8') as f:
                     json.dump(current_config, f, indent=2, ensure_ascii=False)
+
+                print(f"✅ Configuración guardada en: {self.config_file}")
 
             except Exception as e:
                 raise Exception(f"Error guardando configuración: {str(e)}")
