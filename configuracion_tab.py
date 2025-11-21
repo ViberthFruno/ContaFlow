@@ -51,24 +51,15 @@ class ConfiguracionTab:
         self.create_subtab_notebook()
 
     def create_title(self):
-        """Crea el título de la pestaña con mejor diseño."""
-        title_frame = ttk.LabelFrame(self.main_frame, text="Configuración del Sistema", padding=15)
+        """Crea el título de la pestaña."""
+        title_frame = ttk.LabelFrame(self.main_frame, text="Configuración del Sistema", padding=10)
         title_frame.grid(row=0, column=0, padx=10, pady=(10, 5), sticky="ew")
 
-        title_label = ttk.Label(
-            title_frame,
-            text="⚙️ Configuración del Sistema",
-            font=("Arial", 14, "bold"),
-            foreground="#2c3e50"
-        )
+        title_label = ttk.Label(title_frame, text="⚙️ Configuración",
+                                font=("Arial", 14, "bold"))
         title_label.pack()
 
-        subtitle_label = ttk.Label(
-            title_frame,
-            text="Gestiona credenciales, destinatarios, búsqueda y procesamiento XML",
-            font=("Arial", 9),
-            foreground="#7f8c8d"
-        )
+        subtitle_label = ttk.Label(title_frame, text="Gestiona todas las configuraciones del bot")
         subtitle_label.pack()
 
     def create_subtab_notebook(self):
@@ -439,13 +430,12 @@ class EmailDestinatariosSubTab:
             self.cc_counter_label.config(text=f"{len(self.cc_entries)}/{self.max_ccs}")
 
     def test_connection(self):
-        """Prueba la conexión de email con mejor feedback visual."""
+        """Prueba la conexión de email."""
         credentials_data = self._get_credentials_data()
         if not all(credentials_data.values()):
-            self.update_credentials_status("🔴 Complete todos los campos", "#e74c3c")
-            return
+            return self.update_credentials_status("🔴 Complete todos los campos", "red")
 
-        self.update_credentials_status("🔄 Probando conexión...", "#f39c12")
+        self.update_credentials_status("🔄 Probando conexión...", "orange")
 
         def test_thread():
             try:
@@ -454,58 +444,47 @@ class EmailDestinatariosSubTab:
                 )
 
                 def update_ui():
-                    if success:
-                        color = "#27ae60"  # Verde
-                        icon = "✅"
-                    else:
-                        color = "#e74c3c"  # Rojo
-                        icon = "❌"
+                    color = "green" if success else "red"
+                    icon = "🟢" if success else "🔴"
                     self.update_credentials_status(f"{icon} {message}", color)
 
                 self.parent.after(0, update_ui)
 
             except Exception as e:
-                self.parent.after(0, lambda: self.update_credentials_status(f"❌ Error: {str(e)}", "#e74c3c"))
+                self.parent.after(0, lambda: self.update_credentials_status(f"🔴 Error: {str(e)}", "red"))
 
         threading.Thread(target=test_thread, daemon=True).start()
 
     def save_all_config(self):
-        """Guarda toda la configuración con mejor feedback visual."""
+        """Guarda toda la configuración (credenciales + destinatarios)."""
         # Validar y obtener datos de credenciales
         credentials_data = self._get_credentials_data()
         if not all(credentials_data.values()):
-            self.update_credentials_status("❌ Complete campos de email", "#e74c3c")
-            return
+            return self.update_credentials_status("🔴 Complete campos de email", "red")
 
         # Validar y obtener datos de destinatarios
         recipients_data = self._get_recipients_data()
         is_valid, error_msg = self._validate_recipients_data(recipients_data)
 
         if not is_valid:
-            self.update_recipients_status(f"❌ Error: {error_msg}", "#e74c3c")
-            return
+            return self.update_recipients_status(f"🔴 Error: {error_msg}", "red")
 
         try:
-            # Mostrar estado guardando
-            self.update_credentials_status("💾 Guardando...", "#f39c12")
-            self.update_recipients_status("💾 Guardando...", "#f39c12")
-
             # Guardar ambas configuraciones
             combined_config = credentials_data.copy()
             combined_config["recipients_config"] = recipients_data
 
             self.config_tab.config_manager.save_config(combined_config)
 
-            # Confirmación exitosa
-            self.update_credentials_status("✅ Email configurado", "#27ae60")
-            self.update_recipients_status("✅ Destinatarios configurados", "#27ae60")
+            self.update_credentials_status("🟢 Email configurado", "green")
+            self.update_recipients_status("🟢 Destinatarios configurados", "green")
 
         except Exception as e:
-            self.update_credentials_status(f"❌ Error al guardar: {str(e)}", "#e74c3c")
-            self.update_recipients_status(f"❌ Error al guardar: {str(e)}", "#e74c3c")
+            self.update_credentials_status(f"🔴 Error al guardar: {str(e)}", "red")
+            self.update_recipients_status(f"🔴 Error al guardar: {str(e)}", "red")
 
     def clear_all_config(self):
-        """Limpia toda la configuración con confirmación visual."""
+        """Limpia toda la configuración."""
         # Limpiar credenciales
         self.provider_var.set("Gmail")
         self.email_var.set("")
@@ -522,9 +501,9 @@ class EmailDestinatariosSubTab:
         self.update_cc_counter()
         self.add_cc_btn.config(state="normal")
 
-        # Actualizar estados con mejor feedback
-        self.update_credentials_status("⚪ No configurado", "#95a5a6")
-        self.update_recipients_status("⚪ No configurado", "#95a5a6")
+        # Actualizar estados
+        self.update_credentials_status("🔴 No configurado", "red")
+        self.update_recipients_status("🔴 No configurado", "red")
 
         try:
             self.config_tab.config_manager.clear_config()
@@ -532,12 +511,10 @@ class EmailDestinatariosSubTab:
             print(f"Error limpiando configuración: {e}")
 
     def load_existing_config(self):
-        """Carga configuración existente con indicadores visuales."""
+        """Carga configuración existente."""
         try:
             config = self.config_tab.config_manager.load_config()
             if not config:
-                self.update_credentials_status("⚪ No configurado", "#95a5a6")
-                self.update_recipients_status("⚪ No configurado", "#95a5a6")
                 return
 
             # Cargar credenciales
@@ -546,7 +523,7 @@ class EmailDestinatariosSubTab:
             self.password_var.set(config.get("password", ""))
 
             if config.get("email"):
-                self.update_credentials_status("📋 Email cargado", "#3498db")
+                self.update_credentials_status("🟡 Email cargado", "orange")
 
             # Cargar destinatarios
             recipients_config = config.get("recipients_config")
@@ -561,11 +538,10 @@ class EmailDestinatariosSubTab:
                         self.cc_entries[-1]['entry'].insert(0, cc_email)
 
                 if recipients_config.get("main_recipient"):
-                    self.update_recipients_status("📋 Destinatarios cargados", "#3498db")
+                    self.update_recipients_status("🟡 Destinatarios cargados", "orange")
 
         except Exception as e:
             print(f"Error cargando configuración: {e}")
-            self.update_credentials_status(f"❌ Error: {str(e)}", "#e74c3c")
 
     def _get_credentials_data(self):
         """Obtiene los datos de credenciales actuales."""
