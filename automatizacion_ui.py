@@ -2,13 +2,15 @@
 """
 Interfaz simplificada de automatización usando tkinter nativo.
 Controles básicos del bot sin configuración de intervalo ni auto-inicio.
+Diseño moderno con log oscuro elegante y controles optimizados.
 """
-# Archivos relacionados: automatizacion_tab.py, bot_controller.py
+# Archivos relacionados: automatizacion_tab.py, bot_controller.py, theme_manager.py
 
 import tkinter as tk
 from tkinter import ttk
 import threading
 from datetime import datetime
+from theme_manager import ModernTheme, create_modern_text_widget
 
 
 class AutomatizacionUI:
@@ -56,49 +58,66 @@ class AutomatizacionUI:
         self.create_log_panel()
 
     def create_control_panel(self):
-        """Crea el panel de controles simplificado."""
-        # Frame principal de controles
-        control_frame = ttk.LabelFrame(self.main_frame, text="🎛️ Control del Bot", padding=15)
+        """Crea el panel de controles moderno y elegante."""
+        # Frame principal de controles con estilo moderno
+        control_frame = ttk.LabelFrame(self.main_frame, text="🎛️ Control del Bot",
+                                      padding=20, style="Modern.TLabelframe")
         control_frame.grid(row=0, column=0, padx=(0, 10), pady=0, sticky="nsew")
 
-        # Estado del bot
+        # Estado del bot con card moderno
         self.create_status_section(control_frame)
 
-        # Botones principales
+        # Botones principales con estilos modernos
         self.create_main_buttons(control_frame)
 
     def create_status_section(self, parent):
-        """Crea la sección de estado."""
-        status_frame = ttk.LabelFrame(parent, text="Estado del Bot", padding=10)
-        status_frame.pack(fill=tk.X, pady=(0, 15))
+        """Crea la sección de estado moderna con card visual."""
+        # Card con fondo de superficie
+        status_card = tk.Frame(parent, bg=ModernTheme.BG_SURFACE,
+                              highlightbackground=ModernTheme.BORDER_LIGHT,
+                              highlightthickness=1)
+        status_card.pack(fill=tk.X, pady=(0, 20))
 
-        self.bot_status_label = ttk.Label(status_frame, text="🔴 Bot Detenido",
-                                          font=("Arial", 12, "bold"))
+        # Label de título
+        title_label = tk.Label(status_card, text="Estado del Bot",
+                              font=ModernTheme.FONT_SUBHEADING,
+                              bg=ModernTheme.BG_SURFACE,
+                              fg=ModernTheme.TEXT_SECONDARY)
+        title_label.pack(pady=(10, 5))
+
+        # Estado del bot con mejor visibilidad
+        self.bot_status_label = tk.Label(status_card, text="🔴 Bot Detenido",
+                                         font=("Segoe UI", 14, "bold"),
+                                         bg=ModernTheme.BG_SURFACE,
+                                         fg=ModernTheme.DANGER,
+                                         pady=15)
         self.bot_status_label.pack()
 
     def create_main_buttons(self, parent):
-        """Crea los botones principales."""
+        """Crea los botones principales con estilos modernos."""
         buttons_frame = ttk.Frame(parent)
-        buttons_frame.pack(fill=tk.X, side=tk.BOTTOM, pady=(15, 0))
+        buttons_frame.pack(fill=tk.X, side=tk.BOTTOM, pady=(20, 0))
 
-        # Botón toggle (iniciar/detener)
+        # Botón toggle (iniciar/detener) - Grande y destacado
         self.btn_toggle = ttk.Button(buttons_frame, text="▶️ Iniciar Bot",
                                      command=self._handle_toggle_bot_click,
-                                     style="Accent.TButton")
-        self.btn_toggle.pack(fill=tk.X, pady=(0, 10))
+                                     style="Primary.TButton")
+        self.btn_toggle.pack(fill=tk.X, pady=(0, 15), ipady=8)
 
-        # Separador
+        # Separador moderno
         separator = ttk.Separator(buttons_frame, orient='horizontal')
-        separator.pack(fill=tk.X, pady=(10, 10))
+        separator.pack(fill=tk.X, pady=(5, 15))
 
-        # Botón limpiar log
+        # Botón limpiar log con estilo normal
         clear_btn = ttk.Button(buttons_frame, text="🗑️ Limpiar Log",
-                               command=self._handle_clear_log_click)
-        clear_btn.pack(fill=tk.X, pady=(0, 5))
+                               command=self._handle_clear_log_click,
+                               style="TButton")
+        clear_btn.pack(fill=tk.X, ipady=5)
 
     def create_log_panel(self):
-        """Crea el panel de log de actividad."""
-        log_frame = ttk.LabelFrame(self.main_frame, text="📋 Log de Actividad", padding=10)
+        """Crea el panel de log moderno con fondo oscuro elegante."""
+        log_frame = ttk.LabelFrame(self.main_frame, text="📋 Log de Actividad",
+                                  padding=10, style="Modern.TLabelframe")
         log_frame.grid(row=0, column=1, padx=0, pady=0, sticky="nsew")
 
         # Configurar expansión del frame
@@ -111,17 +130,18 @@ class AutomatizacionUI:
         text_frame.grid_columnconfigure(0, weight=1)
         text_frame.grid_rowconfigure(0, weight=1)
 
-        # Text widget
-        self.log_text = tk.Text(text_frame, wrap=tk.WORD, state=tk.DISABLED,
-                                font=("Consolas", 9), bg="white", fg="black")
+        # Text widget moderno con fondo oscuro elegante
+        self.log_text = create_modern_text_widget(text_frame,
+                                                  wrap=tk.WORD,
+                                                  state=tk.DISABLED)
         self.log_text.grid(row=0, column=0, sticky="nsew")
 
-        # Scrollbar
+        # Scrollbar moderna
         scrollbar = ttk.Scrollbar(text_frame, orient=tk.VERTICAL, command=self.log_text.yview)
         scrollbar.grid(row=0, column=1, sticky="ns")
         self.log_text.config(yscrollcommand=scrollbar.set)
 
-        # Mensaje inicial
+        # Mensajes iniciales con estilo
         self.add_log_message("🚀 Sistema de búsqueda 'Cargador' iniciado", "info")
         self.add_log_message("⏰ Monitoreo configurado: 1 minuto (fijo)", "info")
         self.add_log_message("🎯 Objetivo: Correos 'Cargador' con archivos Excel", "info")
@@ -198,22 +218,30 @@ class AutomatizacionUI:
     # ========== MÉTODOS DE ACTUALIZACIÓN DE UI ==========
 
     def update_bot_status(self, status_text, color):
-        """Actualiza el estado visual del bot."""
+        """Actualiza el estado visual del bot con colores modernos."""
         try:
-            self.bot_status_label.config(text=status_text, foreground=color)
+            # Mapear colores a la paleta moderna
+            color_map = {
+                'green': ModernTheme.SUCCESS,
+                'red': ModernTheme.DANGER,
+                'orange': ModernTheme.WARNING,
+                'blue': ModernTheme.INFO
+            }
+            modern_color = color_map.get(color, color)
+            self.bot_status_label.config(text=status_text, fg=modern_color)
         except Exception as e:
             print(f"Error actualizando status: {e}")
 
     def update_ui_for_running_state(self):
-        """Actualiza UI para estado 'corriendo'."""
+        """Actualiza UI para estado 'corriendo' con estilos modernos."""
         try:
             self.update_bot_status("🟢 Bot Activo - Monitoreo cada 1 min", "green")
-            self.btn_toggle.config(text="⏹️ Detener Bot", state=tk.NORMAL)
+            self.btn_toggle.config(text="⏹️ Detener Bot", state=tk.NORMAL, style="Danger.TButton")
         except Exception as e:
             print(f"Error actualizando UI running: {e}")
 
     def update_ui_for_stopping_state(self):
-        """Actualiza UI para estado 'deteniéndose'."""
+        """Actualiza UI para estado 'deteniéndose' con estilos modernos."""
         try:
             self.update_bot_status("🟡 Deteniendo...", "orange")
             self.btn_toggle.config(text="⏳ Deteniendo...", state=tk.DISABLED)
@@ -221,26 +249,28 @@ class AutomatizacionUI:
             print(f"Error actualizando UI stopping: {e}")
 
     def update_ui_for_stopped_state(self):
-        """Actualiza UI para estado 'detenido'."""
+        """Actualiza UI para estado 'detenido' con estilos modernos."""
         try:
             self.update_bot_status("🔴 Bot Detenido", "red")
-            self.btn_toggle.config(text="▶️ Iniciar Bot", state=tk.NORMAL)
+            self.btn_toggle.config(text="▶️ Iniciar Bot", state=tk.NORMAL, style="Primary.TButton")
         except Exception as e:
             print(f"Error actualizando UI stopped: {e}")
 
     def reset_stop_state(self, bot_running):
-        """Resetea estado de parada."""
+        """Resetea estado de parada con estilos modernos."""
         try:
             if bot_running:
                 text = "⏹️ Detener Bot"
                 status = "🟢 Bot Activo - Monitoreo cada 1 min"
                 color = "green"
+                style = "Danger.TButton"
             else:
                 text = "▶️ Iniciar Bot"
                 status = "🔴 Bot Detenido"
                 color = "red"
+                style = "Primary.TButton"
 
-            self.btn_toggle.config(text=text, state=tk.NORMAL)
+            self.btn_toggle.config(text=text, state=tk.NORMAL, style=style)
             self.update_bot_status(status, color)
         except Exception as e:
             print(f"Error reseteando estado: {e}")

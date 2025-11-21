@@ -2,27 +2,33 @@
 """
 Ventana principal simplificada de ContaFlow usando tkinter nativo.
 Interfaz limpia con navegación por pestañas sin auto-inicio del bot.
+Diseño moderno y optimizado con theme_manager.
 """
-# Archivos relacionados: automatizacion_tab.py, configuracion_tab.py
+# Archivos relacionados: automatizacion_tab.py, configuracion_tab.py, theme_manager.py
 
 import tkinter as tk
 from tkinter import ttk
 import sys
 import threading
 import time
+from theme_manager import ModernTheme, apply_modern_theme
 
 
 class MainWindow(tk.Tk):
     """Ventana principal simplificada con tkinter nativo sin auto-inicio."""
 
     def __init__(self):
-        """Inicializa la ventana principal simplificada."""
+        """Inicializa la ventana principal simplificada con diseño moderno."""
         super().__init__()
-        print("🏗️ Inicializando ventana principal de ContaFlow v2.0...")
+        print("🏗️ Inicializando ventana principal de ContaFlow v2.0 con diseño moderno...")
 
         # Variables de control simplificadas
         self.tabs = {}
         self.current_tab = None
+        self.status_label = None
+
+        # Aplicar tema moderno (primero para mejor rendimiento)
+        apply_modern_theme(self)
 
         # Configurar la ventana
         self.setup_window()
@@ -36,7 +42,10 @@ class MainWindow(tk.Tk):
         # Mostrar pestaña por defecto
         self.show_tab("automatizacion")
 
-        print("✅ ContaFlow v2.0 - Sistema Simplificado iniciado correctamente")
+        # Actualizar barra de estado
+        self.update_status("🟢 Sistema listo", "success")
+
+        print("✅ ContaFlow v2.0 - Sistema Simplificado iniciado correctamente con diseño moderno")
 
     def setup_window(self):
         """Configura las propiedades básicas de la ventana."""
@@ -74,29 +83,92 @@ class MainWindow(tk.Tk):
             print(f"⚠️ Error centrando ventana: {e}")
 
     def create_interface(self):
-        """Crea la interfaz principal con notebook de pestañas."""
+        """Crea la interfaz principal moderna con notebook de pestañas."""
         # Frame principal
         main_frame = ttk.Frame(self)
-        main_frame.pack(fill=tk.BOTH, expand=True, padx=10, pady=10)
+        main_frame.pack(fill=tk.BOTH, expand=True)
 
-        # Título principal grande
-        title_label = ttk.Label(main_frame, text="Bot ContaFlow", font=("Arial", 24, "bold"))
-        title_label.pack(pady=(0, 20))
+        # Header con título moderno
+        self.create_header(main_frame)
 
-        # Notebook para pestañas
-        self.notebook = ttk.Notebook(main_frame)
+        # Notebook para pestañas (con estilo moderno)
+        notebook_container = ttk.Frame(main_frame)
+        notebook_container.pack(fill=tk.BOTH, expand=True, padx=10, pady=(0, 5))
+
+        self.notebook = ttk.Notebook(notebook_container)
         self.notebook.pack(fill=tk.BOTH, expand=True)
 
         # Crear frames para cada pestaña
         self.automatizacion_frame = ttk.Frame(self.notebook)
         self.configuracion_frame = ttk.Frame(self.notebook)
 
-        # Agregar pestañas al notebook
+        # Agregar pestañas al notebook con estilo moderno
         self.notebook.add(self.automatizacion_frame, text="⚡ Automatización")
         self.notebook.add(self.configuracion_frame, text="⚙️ Configuración")
 
         # Vincular evento de cambio de pestaña
         self.notebook.bind("<<NotebookTabChanged>>", self._on_tab_changed)
+
+        # Barra de estado moderna
+        self.create_status_bar(main_frame)
+
+    def create_header(self, parent):
+        """Crea el header moderno con título."""
+        header_frame = tk.Frame(parent, bg=ModernTheme.PRIMARY, height=80)
+        header_frame.pack(fill=tk.X, padx=0, pady=0)
+        header_frame.pack_propagate(False)
+
+        # Título principal
+        title_label = tk.Label(header_frame,
+                              text="🤖 Bot ContaFlow",
+                              font=ModernTheme.FONT_TITLE,
+                              bg=ModernTheme.PRIMARY,
+                              fg=ModernTheme.TEXT_WHITE)
+        title_label.pack(side=tk.LEFT, padx=20, pady=20)
+
+        # Versión
+        version_label = tk.Label(header_frame,
+                                text="v2.0",
+                                font=ModernTheme.FONT_SMALL,
+                                bg=ModernTheme.PRIMARY,
+                                fg=ModernTheme.TEXT_LIGHT)
+        version_label.pack(side=tk.LEFT, padx=0, pady=25)
+
+    def create_status_bar(self, parent):
+        """Crea la barra de estado moderna."""
+        status_frame = tk.Frame(parent, bg=ModernTheme.PRIMARY_LIGHT, height=30)
+        status_frame.pack(fill=tk.X, side=tk.BOTTOM)
+        status_frame.pack_propagate(False)
+
+        # Label de estado
+        self.status_label = tk.Label(status_frame,
+                                     text="🟢 Sistema listo",
+                                     font=ModernTheme.FONT_SMALL,
+                                     bg=ModernTheme.PRIMARY_LIGHT,
+                                     fg=ModernTheme.TEXT_LIGHT,
+                                     anchor=tk.W)
+        self.status_label.pack(side=tk.LEFT, padx=15, fill=tk.X, expand=True)
+
+    def update_status(self, message, status_type="info"):
+        """
+        Actualiza la barra de estado de forma optimizada.
+
+        Args:
+            message: Mensaje a mostrar
+            status_type: 'success', 'warning', 'danger', 'info'
+        """
+        if not self.status_label:
+            return
+
+        icons = {
+            'success': '🟢',
+            'warning': '🟡',
+            'danger': '🔴',
+            'info': '🔵'
+        }
+
+        icon = icons.get(status_type, '🔵')
+        self.status_label.config(text=f"{icon} {message}")
 
     def initialize_tabs(self):
         """Inicializa las pestañas del sistema simplificado."""

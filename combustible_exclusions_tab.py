@@ -2,6 +2,7 @@
 
 Pestaña de configuración para gestionar exclusiones de combustibles/placas
 basadas en el campo <NombreEmisor>.
+Diseño moderno optimizado.
 """
 
 import tkinter as tk
@@ -10,6 +11,7 @@ from typing import List
 import unicodedata
 
 from config_manager import ConfigManager
+from theme_manager import ModernTheme
 
 
 class CombustibleExclusionsTab:
@@ -36,31 +38,46 @@ class CombustibleExclusionsTab:
         main_frame.grid_columnconfigure(0, weight=1)
         main_frame.grid_rowconfigure(2, weight=1)
 
+        # Descripción moderna con card
+        desc_card = tk.Frame(main_frame, bg=ModernTheme.INFO,
+                            highlightbackground=ModernTheme.SECONDARY,
+                            highlightthickness=1)
+        desc_card.grid(row=0, column=0, sticky="ew", pady=(0, 10))
+
         description = (
-            "Agrega los valores exactos de <NombreEmisor> que deben excluirse del "
+            "💬 Agrega los valores exactos de <NombreEmisor> que deben excluirse del "
             "tratamiento como Combustible/Placa. Cuando se detecte un emisor en "
             "esta lista, el bot utilizará el comportamiento normal (sin tratarlo "
             "como combustible)."
         )
-        ttk.Label(main_frame, text=description, wraplength=520, justify=tk.LEFT).grid(
-            row=0, column=0, sticky="w", pady=(0, 10)
-        )
+        tk.Label(desc_card, text=description, wraplength=520, justify=tk.LEFT,
+                bg=ModernTheme.INFO, fg=ModernTheme.TEXT_WHITE,
+                font=ModernTheme.FONT_SMALL, pady=8, padx=10).pack()
 
-        input_frame = ttk.LabelFrame(main_frame, text="➕ Agregar exclusión", padding=10)
+        input_frame = ttk.LabelFrame(main_frame, text="➕ Agregar exclusión",
+                                     padding=10, style="Modern.TLabelframe")
         input_frame.grid(row=1, column=0, sticky="ew")
         input_frame.columnconfigure(0, weight=1)
 
-        entry = ttk.Entry(input_frame, textvariable=self.emitter_var)
-        entry.grid(row=0, column=0, sticky="ew", padx=(0, 5))
-        add_btn = ttk.Button(input_frame, text="Agregar", command=self.add_exclusion)
-        add_btn.grid(row=0, column=1)
+        entry = ttk.Entry(input_frame, textvariable=self.emitter_var,
+                         font=ModernTheme.FONT_NORMAL)
+        entry.grid(row=0, column=0, sticky="ew", padx=(0, 8))
+        add_btn = ttk.Button(input_frame, text="Agregar", command=self.add_exclusion,
+                            style="Primary.TButton")
+        add_btn.grid(row=0, column=1, ipady=4)
 
-        list_frame = ttk.LabelFrame(main_frame, text="📋 Lista de emisores excluidos", padding=10)
+        list_frame = ttk.LabelFrame(main_frame, text="📋 Lista de emisores excluidos",
+                                   padding=10, style="Modern.TLabelframe")
         list_frame.grid(row=2, column=0, sticky="nsew", pady=10)
         list_frame.columnconfigure(0, weight=1)
         list_frame.rowconfigure(0, weight=1)
 
-        self.listbox = tk.Listbox(list_frame, height=10)
+        self.listbox = tk.Listbox(list_frame, height=10,
+                                  font=ModernTheme.FONT_NORMAL,
+                                  bg=ModernTheme.BG_SURFACE,
+                                  fg=ModernTheme.TEXT_PRIMARY,
+                                  selectbackground=ModernTheme.SECONDARY,
+                                  selectforeground=ModernTheme.TEXT_WHITE)
         self.listbox.grid(row=0, column=0, sticky="nsew")
         scrollbar = ttk.Scrollbar(list_frame, orient=tk.VERTICAL, command=self.listbox.yview)
         scrollbar.grid(row=0, column=1, sticky="ns")
@@ -70,14 +87,17 @@ class CombustibleExclusionsTab:
         buttons_frame.grid(row=3, column=0, sticky="ew")
         buttons_frame.columnconfigure((0, 1, 2), weight=1)
 
-        remove_btn = ttk.Button(buttons_frame, text="Eliminar seleccionado", command=self.remove_selected)
-        remove_btn.grid(row=0, column=0, sticky="ew", padx=(0, 5))
+        remove_btn = ttk.Button(buttons_frame, text="Eliminar seleccionado",
+                               command=self.remove_selected, style="TButton")
+        remove_btn.grid(row=0, column=0, sticky="ew", padx=(0, 5), ipady=5)
 
-        clear_btn = ttk.Button(buttons_frame, text="Limpiar lista", command=self.clear_exclusions)
-        clear_btn.grid(row=0, column=1, sticky="ew", padx=5)
+        clear_btn = ttk.Button(buttons_frame, text="Limpiar lista",
+                              command=self.clear_exclusions, style="TButton")
+        clear_btn.grid(row=0, column=1, sticky="ew", padx=5, ipady=5)
 
-        save_btn = ttk.Button(buttons_frame, text="Guardar cambios", command=self.save_exclusions)
-        save_btn.grid(row=0, column=2, sticky="ew", padx=(5, 0))
+        save_btn = ttk.Button(buttons_frame, text="Guardar cambios",
+                             command=self.save_exclusions, style="Success.TButton")
+        save_btn.grid(row=0, column=2, sticky="ew", padx=(5, 0), ipady=5)
 
         status_frame = ttk.LabelFrame(main_frame, text="Estado", padding=10)
         status_frame.grid(row=4, column=0, sticky="ew", pady=(10, 0))
