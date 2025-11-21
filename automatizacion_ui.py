@@ -74,19 +74,12 @@ class AutomatizacionUI:
         # Configurar para centrar contenido
         top_frame.grid_columnconfigure(0, weight=1)
 
-        # Card con estado del bot
-        status_card = tk.Frame(top_frame, bg=ModernTheme.BG_SURFACE,
-                              highlightbackground=ModernTheme.BORDER_LIGHT,
-                              highlightthickness=1)
-        status_card.grid(row=0, column=0, pady=(0, 20))
-
-        # Estado del bot
-        self.bot_status_label = tk.Label(status_card, text="🔴 Bot Detenido",
-                                         font=("Segoe UI", 16, "bold"),
-                                         bg=ModernTheme.BG_SURFACE,
+        # Estado del bot - simplificado sin cuadro
+        self.bot_status_label = tk.Label(top_frame, text="🔴 Bot Detenido",
+                                         font=("Segoe UI", 12, "bold"),
                                          fg=ModernTheme.DANGER,
-                                         padx=30, pady=20)
-        self.bot_status_label.pack()
+                                         pady=10)
+        self.bot_status_label.grid(row=0, column=0, pady=(0, 15))
 
         # Botón toggle (iniciar/detener) - Grande y centrado
         self.btn_toggle = ttk.Button(top_frame, text="▶️ Iniciar Bot",
@@ -101,36 +94,8 @@ class AutomatizacionUI:
                                       padding=20, style="Modern.TLabelframe")
         control_frame.grid(row=1, column=0, padx=(0, 10), pady=0, sticky="nsew")
 
-        # Información del sistema
-        self.create_info_section(control_frame)
-
         # Botones de control
         self.create_control_buttons(control_frame)
-
-    def create_info_section(self, parent):
-        """Crea la sección de información del sistema."""
-        # Card con información del sistema
-        info_card = tk.Frame(parent, bg=ModernTheme.BG_SURFACE,
-                            highlightbackground=ModernTheme.BORDER_LIGHT,
-                            highlightthickness=1)
-        info_card.pack(fill=tk.BOTH, expand=True, pady=(0, 20))
-
-        # Label de título
-        title_label = tk.Label(info_card, text="Información del Sistema",
-                              font=ModernTheme.FONT_SUBHEADING,
-                              bg=ModernTheme.BG_SURFACE,
-                              fg=ModernTheme.TEXT_SECONDARY)
-        title_label.pack(pady=(15, 10))
-
-        # Información del monitoreo
-        info_text = "⏰ Monitoreo: 1 minuto\n🎯 Búsqueda: 'Cargador'\n📎 Archivos: Excel"
-        info_label = tk.Label(info_card, text=info_text,
-                             font=("Segoe UI", 10),
-                             bg=ModernTheme.BG_SURFACE,
-                             fg=ModernTheme.TEXT_PRIMARY,
-                             justify=tk.LEFT,
-                             pady=10)
-        info_label.pack()
 
     def create_control_buttons(self, parent):
         """Crea los botones de control."""
@@ -264,7 +229,7 @@ class AutomatizacionUI:
     def update_ui_for_running_state(self):
         """Actualiza UI para estado 'corriendo' con estilos modernos."""
         try:
-            self.update_bot_status("🟢 Bot Activo - Monitoreo cada 1 min", "green")
+            self.update_bot_status("🟢 Bot Activo", "green")
             self.btn_toggle.config(text="⏹️ Detener Bot", state=tk.NORMAL, style="Danger.TButton")
         except Exception as e:
             print(f"Error actualizando UI running: {e}")
@@ -290,7 +255,7 @@ class AutomatizacionUI:
         try:
             if bot_running:
                 text = "⏹️ Detener Bot"
-                status = "🟢 Bot Activo - Monitoreo cada 1 min"
+                status = "🟢 Bot Activo"
                 color = "green"
                 style = "Danger.TButton"
             else:
