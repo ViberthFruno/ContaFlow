@@ -155,8 +155,8 @@ class ModernTheme:
                        padding=(15, 8))
 
         style.map("Primary.TButton",
-                 background=[('active', '#2980B9'), ('pressed', '#2471A3')],
-                 foreground=[('active', ModernTheme.TEXT_WHITE)])
+                 background=[('active', '#2980B9'), ('pressed', '#2471A3'), ('disabled', '#95A5A6')],
+                 foreground=[('active', ModernTheme.TEXT_WHITE), ('pressed', ModernTheme.TEXT_WHITE), ('disabled', '#ECF0F1')])
 
         # Botón de éxito (Success)
         style.configure("Success.TButton",
@@ -168,8 +168,8 @@ class ModernTheme:
                        padding=(15, 8))
 
         style.map("Success.TButton",
-                 background=[('active', '#229954'), ('pressed', '#1E8449')],
-                 foreground=[('active', ModernTheme.TEXT_WHITE)])
+                 background=[('active', '#229954'), ('pressed', '#1E8449'), ('disabled', '#95A5A6')],
+                 foreground=[('active', ModernTheme.TEXT_WHITE), ('pressed', ModernTheme.TEXT_WHITE), ('disabled', '#ECF0F1')])
 
         # Botón de peligro (Danger)
         style.configure("Danger.TButton",
@@ -181,8 +181,8 @@ class ModernTheme:
                        padding=(15, 8))
 
         style.map("Danger.TButton",
-                 background=[('active', '#C0392B'), ('pressed', '#A93226')],
-                 foreground=[('active', ModernTheme.TEXT_WHITE)])
+                 background=[('active', '#C0392B'), ('pressed', '#A93226'), ('disabled', '#95A5A6')],
+                 foreground=[('active', ModernTheme.TEXT_WHITE), ('pressed', ModernTheme.TEXT_WHITE), ('disabled', '#ECF0F1')])
 
         # Botón normal (default)
         style.configure("TButton",
@@ -194,7 +194,8 @@ class ModernTheme:
                        padding=(12, 6))
 
         style.map("TButton",
-                 background=[('active', ModernTheme.BORDER_LIGHT), ('pressed', ModernTheme.BORDER)],
+                 background=[('active', ModernTheme.BORDER_LIGHT), ('pressed', ModernTheme.SECONDARY), ('disabled', '#E0E4E8')],
+                 foreground=[('pressed', ModernTheme.TEXT_WHITE), ('disabled', '#95A5A6')],
                  bordercolor=[('active', ModernTheme.SECONDARY)])
 
         # Botón pequeño
@@ -205,6 +206,11 @@ class ModernTheme:
                        borderwidth=1,
                        focuscolor='none',
                        padding=(8, 4))
+
+        style.map("Small.TButton",
+                 background=[('active', ModernTheme.BORDER_LIGHT), ('pressed', ModernTheme.SECONDARY), ('disabled', '#E0E4E8')],
+                 foreground=[('pressed', ModernTheme.TEXT_WHITE), ('disabled', '#95A5A6')],
+                 bordercolor=[('active', ModernTheme.SECONDARY)])
 
     @staticmethod
     def _configure_entries(style):
@@ -250,8 +256,8 @@ class ModernTheme:
                        borderwidth=0)
 
         style.map("TNotebook.Tab",
-                 background=[('selected', ModernTheme.SECONDARY), ('active', ModernTheme.BORDER_LIGHT)],
-                 foreground=[('selected', ModernTheme.TEXT_WHITE), ('active', ModernTheme.PRIMARY)],
+                 background=[('selected', ModernTheme.SECONDARY), ('active', ModernTheme.BORDER_LIGHT), ('!selected', ModernTheme.BG_SURFACE)],
+                 foreground=[('selected', ModernTheme.TEXT_WHITE), ('active', ModernTheme.PRIMARY), ('!selected', ModernTheme.TEXT_SECONDARY)],
                  expand=[('selected', [1, 1, 1, 0])])
 
     @staticmethod
