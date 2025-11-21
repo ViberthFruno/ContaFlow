@@ -74,19 +74,18 @@ class AutomatizacionUI:
         # Configurar para centrar contenido
         top_frame.grid_columnconfigure(0, weight=1)
 
-        # Estado del bot - simplificado sin cuadro
+        # Estado del bot - solo texto sin fondo
         self.bot_status_label = tk.Label(top_frame, text="🔴 Bot Detenido",
                                          font=("Segoe UI", 12, "bold"),
                                          fg=ModernTheme.DANGER,
-                                         bg=ModernTheme.BG_MAIN,
                                          pady=10)
         self.bot_status_label.grid(row=0, column=0, pady=(0, 15))
 
-        # Botón toggle (iniciar/detener) - Grande y centrado
+        # Botón toggle (iniciar/detener) - Tamaño mediano
         self.btn_toggle = ttk.Button(top_frame, text="▶️ Iniciar Bot",
                                      command=self._handle_toggle_bot_click,
                                      style="Primary.TButton")
-        self.btn_toggle.grid(row=1, column=0, pady=(0, 10), ipadx=40, ipady=15)
+        self.btn_toggle.grid(row=1, column=0, pady=(0, 10), ipadx=20, ipady=10)
 
     def create_control_panel(self):
         """Crea el panel de controles con botón de limpiar log."""
