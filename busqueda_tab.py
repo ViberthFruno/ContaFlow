@@ -2,13 +2,15 @@
 """
 Sub-pestaña simplificada para configuración de búsqueda de correos 'Cargador' con archivos Excel.
 Configuración fija optimizada para el nuevo sistema robusto de procesamiento.
+Diseño moderno optimizado.
 """
-# Archivos relacionados: config_manager.py
+# Archivos relacionados: config_manager.py, theme_manager.py
 
 import tkinter as tk
 from tkinter import ttk, filedialog
 import os
 from config_manager import ConfigManager
+from theme_manager import ModernTheme
 
 
 class BusquedaTab:
@@ -31,52 +33,66 @@ class BusquedaTab:
         self.load_search_config()
 
     def create_interface(self):
-        """Crea la interfaz de usuario simplificada."""
+        """Crea la interfaz de usuario moderna optimizada."""
         # Frame principal que contendrá todos los elementos
         main_frame = ttk.Frame(self.parent)
         main_frame.pack(fill=tk.BOTH, expand=True, padx=10, pady=10)
 
-        # Frame para la configuración requerida
-        config_frame = ttk.LabelFrame(main_frame, text="📁 Configuración Requerida", padding=15)
+        # Frame para la configuración requerida con estilo moderno
+        config_frame = ttk.LabelFrame(main_frame, text="📁 Configuración Requerida",
+                                     padding=15, style="Modern.TLabelframe")
         config_frame.pack(fill=tk.BOTH, expand=True)
 
         # --- Sección de Carpeta de Descarga ---
         self.create_download_folder_section(config_frame)
 
         # --- Sección de Estado de Configuración ---
-        status_frame = ttk.LabelFrame(config_frame, text="Estado de Configuración", padding=10)
-        status_frame.pack(fill=tk.X, pady=(20, 10), anchor="s")
+        status_card = tk.Frame(config_frame, bg=ModernTheme.BG_SURFACE,
+                              highlightbackground=ModernTheme.BORDER_LIGHT,
+                              highlightthickness=1)
+        status_card.pack(fill=tk.X, pady=(20, 10))
 
-        self.status_label = ttk.Label(status_frame, text="🔴 Carpeta no configurada",
-                                      font=("Arial", 10), wraplength=350)
-        self.status_label.pack(fill=tk.X)
+        tk.Label(status_card, text="Estado de Configuración",
+                font=ModernTheme.FONT_SUBHEADING,
+                bg=ModernTheme.BG_SURFACE,
+                fg=ModernTheme.TEXT_PRIMARY).pack(pady=(8, 5))
+
+        self.status_label = tk.Label(status_card, text="🔴 Carpeta no configurada",
+                                     font=ModernTheme.FONT_NORMAL,
+                                     bg=ModernTheme.BG_SURFACE,
+                                     fg=ModernTheme.TEXT_PRIMARY,
+                                     wraplength=350)
+        self.status_label.pack(fill=tk.X, pady=(0, 8))
 
         # --- Sección de Botones de Control ---
         buttons_frame = ttk.Frame(config_frame)
         buttons_frame.pack(fill=tk.X, side=tk.BOTTOM, pady=(10, 0))
-        buttons_frame.columnconfigure((0, 1, 2), weight=1) # Para que los botones se expandan
+        buttons_frame.columnconfigure((0, 1, 2), weight=1)
 
         save_btn = ttk.Button(buttons_frame, text="💾 Guardar",
-                              command=self.save_search_config)
-        save_btn.grid(row=0, column=0, sticky=tk.EW, padx=(0, 5))
+                              command=self.save_search_config,
+                              style="Success.TButton")
+        save_btn.grid(row=0, column=0, sticky=tk.EW, padx=(0, 5), ipady=5)
 
         reset_btn = ttk.Button(buttons_frame, text="🔄 Restaurar",
-                               command=self.set_default_folder)
-        reset_btn.grid(row=0, column=1, sticky=tk.EW, padx=5)
+                               command=self.set_default_folder,
+                               style="TButton")
+        reset_btn.grid(row=0, column=1, sticky=tk.EW, padx=5, ipady=5)
 
         clear_btn = ttk.Button(buttons_frame, text="🗑️ Limpiar",
-                               command=self.clear_search_config)
-        clear_btn.grid(row=0, column=2, sticky=tk.EW, padx=(5, 0))
+                               command=self.clear_search_config,
+                               style="TButton")
+        clear_btn.grid(row=0, column=2, sticky=tk.EW, padx=(5, 0), ipady=5)
 
 
     def create_download_folder_section(self, parent):
-        """Crea la sección para configurar la carpeta de descarga."""
+        """Crea la sección moderna para configurar la carpeta de descarga."""
         download_frame = ttk.Frame(parent)
         download_frame.pack(fill=tk.X, anchor="n")
 
         download_label = ttk.Label(download_frame, text="Carpeta de Descarga:",
-                                   font=("Arial", 10, "bold"))
-        download_label.pack(anchor=tk.W, pady=(0, 5))
+                                   font=ModernTheme.FONT_SUBHEADING)
+        download_label.pack(anchor=tk.W, pady=(0, 8))
 
         # Frame para el campo de entrada y el botón de búsqueda
         entry_frame = ttk.Frame(download_frame)
@@ -84,11 +100,12 @@ class BusquedaTab:
         entry_frame.grid_columnconfigure(0, weight=1)
 
         download_entry = ttk.Entry(entry_frame, textvariable=self.download_folder_var,
-                                   font=("Arial", 9))
-        download_entry.grid(row=0, column=0, sticky="ew", padx=(0, 5))
+                                   font=ModernTheme.FONT_NORMAL)
+        download_entry.grid(row=0, column=0, sticky="ew", padx=(0, 8))
 
         browse_btn = ttk.Button(entry_frame, text="📁", width=4,
-                                command=self.browse_folder)
+                                command=self.browse_folder,
+                                style="TButton")
         browse_btn.grid(row=0, column=1)
 
     def browse_folder(self):

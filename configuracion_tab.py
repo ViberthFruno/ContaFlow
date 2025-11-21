@@ -2,8 +2,9 @@
 """
 Pestaña simplificada de configuración usando tkinter nativo.
 Contiene sub-pestañas para email/destinatarios, búsqueda y XML únicamente.
+Diseño moderno con cards y estilos elegantes.
 """
-# Archivos relacionados: busqueda_tab.py, xml_tab.py, config_manager.py, email_manager.py
+# Archivos relacionados: busqueda_tab.py, xml_tab.py, config_manager.py, email_manager.py, theme_manager.py
 
 import tkinter as tk
 from tkinter import ttk
@@ -12,6 +13,7 @@ import re
 from email_manager import EmailManager
 from config_manager import ConfigManager
 from combustible_exclusions_tab import CombustibleExclusionsTab
+from theme_manager import ModernTheme
 
 
 class ConfiguracionTab:
@@ -51,16 +53,23 @@ class ConfiguracionTab:
         self.create_subtab_notebook()
 
     def create_title(self):
-        """Crea el título de la pestaña."""
-        title_frame = ttk.LabelFrame(self.main_frame, text="Configuración del Sistema", padding=10)
+        """Crea el título moderno de la pestaña."""
+        title_frame = tk.Frame(self.main_frame, bg=ModernTheme.BG_SURFACE,
+                              highlightbackground=ModernTheme.BORDER_LIGHT,
+                              highlightthickness=1)
         title_frame.grid(row=0, column=0, padx=10, pady=(10, 5), sticky="ew")
 
-        title_label = ttk.Label(title_frame, text="⚙️ Configuración",
-                                font=("Arial", 14, "bold"))
-        title_label.pack()
+        title_label = tk.Label(title_frame, text="⚙️ Configuración",
+                              font=ModernTheme.FONT_HEADING,
+                              bg=ModernTheme.BG_SURFACE,
+                              fg=ModernTheme.PRIMARY)
+        title_label.pack(pady=(10, 5))
 
-        subtitle_label = ttk.Label(title_frame, text="Gestiona todas las configuraciones del bot")
-        subtitle_label.pack()
+        subtitle_label = tk.Label(title_frame, text="Gestiona todas las configuraciones del bot",
+                                 font=ModernTheme.FONT_NORMAL,
+                                 bg=ModernTheme.BG_SURFACE,
+                                 fg=ModernTheme.TEXT_SECONDARY)
+        subtitle_label.pack(pady=(0, 10))
 
     def create_subtab_notebook(self):
         """Crea el notebook para sub-pestañas."""
@@ -240,34 +249,42 @@ class EmailDestinatariosSubTab:
         self.create_control_column(main_frame)
 
     def create_email_column(self, parent):
-        """Crea la columna de configuración de email."""
-        email_frame = ttk.LabelFrame(parent, text="📧 Configuración de Email", padding=15)
+        """Crea la columna moderna de configuración de email."""
+        email_frame = ttk.LabelFrame(parent, text="📧 Configuración de Email",
+                                    padding=15, style="Modern.TLabelframe")
         email_frame.grid(row=0, column=0, padx=(0, 5), pady=0, sticky="nsew")
 
         # Proveedor
-        ttk.Label(email_frame, text="Proveedor de Correo:").pack(anchor=tk.W, pady=(0, 5))
+        ttk.Label(email_frame, text="Proveedor de Correo:",
+                 font=ModernTheme.FONT_NORMAL).pack(anchor=tk.W, pady=(0, 5))
         provider_combo = ttk.Combobox(email_frame, textvariable=self.provider_var,
                                       values=["Gmail", "Outlook", "Yahoo", "Otro"],
-                                      state="readonly", width=30)
+                                      state="readonly", width=30, font=ModernTheme.FONT_NORMAL)
         provider_combo.pack(fill=tk.X, pady=(0, 15))
 
         # Email
-        ttk.Label(email_frame, text="Correo Electrónico:").pack(anchor=tk.W, pady=(0, 5))
-        email_entry = ttk.Entry(email_frame, textvariable=self.email_var, width=35)
+        ttk.Label(email_frame, text="Correo Electrónico:",
+                 font=ModernTheme.FONT_NORMAL).pack(anchor=tk.W, pady=(0, 5))
+        email_entry = ttk.Entry(email_frame, textvariable=self.email_var,
+                               width=35, font=ModernTheme.FONT_NORMAL)
         email_entry.pack(fill=tk.X, pady=(0, 15))
 
         # Contraseña
-        ttk.Label(email_frame, text="Contraseña:").pack(anchor=tk.W, pady=(0, 5))
+        ttk.Label(email_frame, text="Contraseña:",
+                 font=ModernTheme.FONT_NORMAL).pack(anchor=tk.W, pady=(0, 5))
         password_entry = ttk.Entry(email_frame, textvariable=self.password_var,
-                                   show="*", width=35)
+                                   show="*", width=35, font=ModernTheme.FONT_NORMAL)
         password_entry.pack(fill=tk.X, pady=(0, 15))
 
-        # Nota informativa
-        note_frame = ttk.Frame(email_frame)
+        # Nota informativa moderna
+        note_frame = tk.Frame(email_frame, bg=ModernTheme.INFO,
+                             highlightbackground=ModernTheme.SECONDARY,
+                             highlightthickness=1)
         note_frame.pack(fill=tk.X, pady=(10, 0))
 
-        note_label = ttk.Label(note_frame, text="💡 Para Gmail usa una\ncontraseña de aplicación",
-                               foreground="blue", font=("Arial", 9), justify=tk.CENTER)
+        note_label = tk.Label(note_frame, text="💡 Para Gmail usa una\ncontraseña de aplicación",
+                             fg=ModernTheme.TEXT_WHITE, bg=ModernTheme.INFO,
+                             font=ModernTheme.FONT_SMALL, justify=tk.CENTER, pady=8)
         note_label.pack()
 
         # Espaciador para empujar contenido hacia arriba
@@ -275,33 +292,38 @@ class EmailDestinatariosSubTab:
         spacer.pack(fill=tk.BOTH, expand=True)
 
     def create_recipients_column(self, parent):
-        """Crea la columna de configuración de destinatarios."""
-        recipients_frame = ttk.LabelFrame(parent, text="👥 Configuración de Destinatarios", padding=15)
+        """Crea la columna moderna de configuración de destinatarios."""
+        recipients_frame = ttk.LabelFrame(parent, text="👥 Configuración de Destinatarios",
+                                         padding=15, style="Modern.TLabelframe")
         recipients_frame.grid(row=0, column=1, padx=5, pady=0, sticky="nsew")
         recipients_frame.grid_rowconfigure(2, weight=1)
 
         # Destinatario principal
-        ttk.Label(recipients_frame, text="📧 Destinatario Principal:").pack(anchor=tk.W, pady=(0, 5))
+        ttk.Label(recipients_frame, text="📧 Destinatario Principal:",
+                 font=ModernTheme.FONT_NORMAL).pack(anchor=tk.W, pady=(0, 5))
         main_entry = ttk.Entry(recipients_frame, textvariable=self.main_email_var,
-                               font=("Arial", 10), width=35)
+                               font=ModernTheme.FONT_NORMAL, width=35)
         main_entry.pack(fill=tk.X, pady=(0, 15))
 
         # Sección de CCs
         cc_label_frame = ttk.Frame(recipients_frame)
         cc_label_frame.pack(fill=tk.X, pady=(0, 5))
 
-        ttk.Label(cc_label_frame, text="📋 Copias (CC):").pack(side=tk.LEFT)
+        ttk.Label(cc_label_frame, text="📋 Copias (CC):",
+                 font=ModernTheme.FONT_NORMAL).pack(side=tk.LEFT)
         self.cc_counter_label = ttk.Label(cc_label_frame, text=f"0/{self.max_ccs}",
-                                          foreground="gray", font=("Arial", 9))
+                                          foreground=ModernTheme.TEXT_SECONDARY,
+                                          font=ModernTheme.FONT_SMALL)
         self.cc_counter_label.pack(side=tk.RIGHT)
 
         # Frame con scroll para CCs
         self.create_cc_scroll_area(recipients_frame)
 
-        # Botón agregar CC
+        # Botón agregar CC con estilo
         self.add_cc_btn = ttk.Button(recipients_frame, text="➕ Agregar CC",
-                                     command=self.add_cc_field)
-        self.add_cc_btn.pack(fill=tk.X, pady=(10, 0))
+                                     command=self.add_cc_field,
+                                     style="TButton")
+        self.add_cc_btn.pack(fill=tk.X, pady=(10, 0), ipady=4)
 
     def create_cc_scroll_area(self, parent):
         """Crea el área con scroll para los campos CC."""
@@ -336,48 +358,72 @@ class EmailDestinatariosSubTab:
         canvas.bind_all("<MouseWheel>", _on_mousewheel)
 
     def create_control_column(self, parent):
-        """Crea la columna de control y estado."""
-        control_frame = ttk.LabelFrame(parent, text="🔧 Control y Estado", padding=15)
+        """Crea la columna moderna de control y estado."""
+        control_frame = ttk.LabelFrame(parent, text="🔧 Control y Estado",
+                                      padding=15, style="Modern.TLabelframe")
         control_frame.grid(row=0, column=2, padx=(5, 0), pady=0, sticky="nsew")
 
-        # Estado de Email
-        email_status_frame = ttk.LabelFrame(control_frame, text="Estado Email", padding=10)
-        email_status_frame.pack(fill=tk.X, pady=(0, 15))
+        # Estado de Email - Card moderno
+        email_status_card = tk.Frame(control_frame, bg=ModernTheme.BG_SURFACE,
+                                    highlightbackground=ModernTheme.BORDER_LIGHT,
+                                    highlightthickness=1)
+        email_status_card.pack(fill=tk.X, pady=(0, 15))
 
-        self.credentials_status_label = ttk.Label(email_status_frame, text="🔴 No configurado",
-                                                  font=("Arial", 9), wraplength=180)
-        self.credentials_status_label.pack()
+        tk.Label(email_status_card, text="Estado Email",
+                font=ModernTheme.FONT_SUBHEADING,
+                bg=ModernTheme.BG_SURFACE,
+                fg=ModernTheme.TEXT_PRIMARY).pack(pady=(8, 5))
 
-        # Estado de Destinatarios
-        recipients_status_frame = ttk.LabelFrame(control_frame, text="Estado Destinatarios", padding=10)
-        recipients_status_frame.pack(fill=tk.X, pady=(0, 20))
+        self.credentials_status_label = tk.Label(email_status_card, text="🔴 No configurado",
+                                                font=ModernTheme.FONT_SMALL,
+                                                bg=ModernTheme.BG_SURFACE,
+                                                fg=ModernTheme.TEXT_PRIMARY,
+                                                wraplength=180)
+        self.credentials_status_label.pack(pady=(0, 8))
 
-        self.recipients_status_label = ttk.Label(recipients_status_frame, text="🔴 No configurado",
-                                                 font=("Arial", 9), wraplength=180)
-        self.recipients_status_label.pack()
+        # Estado de Destinatarios - Card moderno
+        recipients_status_card = tk.Frame(control_frame, bg=ModernTheme.BG_SURFACE,
+                                         highlightbackground=ModernTheme.BORDER_LIGHT,
+                                         highlightthickness=1)
+        recipients_status_card.pack(fill=tk.X, pady=(0, 20))
+
+        tk.Label(recipients_status_card, text="Estado Destinatarios",
+                font=ModernTheme.FONT_SUBHEADING,
+                bg=ModernTheme.BG_SURFACE,
+                fg=ModernTheme.TEXT_PRIMARY).pack(pady=(8, 5))
+
+        self.recipients_status_label = tk.Label(recipients_status_card, text="🔴 No configurado",
+                                               font=ModernTheme.FONT_SMALL,
+                                               bg=ModernTheme.BG_SURFACE,
+                                               fg=ModernTheme.TEXT_PRIMARY,
+                                               wraplength=180)
+        self.recipients_status_label.pack(pady=(0, 8))
 
         # Espaciador
         spacer = ttk.Frame(control_frame)
         spacer.pack(fill=tk.BOTH, expand=True)
 
-        # Botones de acción
+        # Botones de acción con estilos modernos
         buttons_frame = ttk.Frame(control_frame)
         buttons_frame.pack(fill=tk.X, side=tk.BOTTOM)
 
         # Botón probar conexión
         test_btn = ttk.Button(buttons_frame, text="🔍 Probar Conexión",
-                              command=self.test_connection)
-        test_btn.pack(fill=tk.X, pady=(0, 5))
+                              command=self.test_connection,
+                              style="TButton")
+        test_btn.pack(fill=tk.X, pady=(0, 8), ipady=5)
 
-        # Botón guardar todo
+        # Botón guardar todo (destacado)
         save_btn = ttk.Button(buttons_frame, text="💾 Guardar Todo",
-                              command=self.save_all_config)
-        save_btn.pack(fill=tk.X, pady=(0, 5))
+                              command=self.save_all_config,
+                              style="Success.TButton")
+        save_btn.pack(fill=tk.X, pady=(0, 8), ipady=5)
 
         # Botón limpiar todo
         clear_btn = ttk.Button(buttons_frame, text="🗑️ Limpiar Todo",
-                               command=self.clear_all_config)
-        clear_btn.pack(fill=tk.X)
+                               command=self.clear_all_config,
+                               style="TButton")
+        clear_btn.pack(fill=tk.X, ipady=5)
 
     def add_cc_field(self):
         """Agrega un nuevo campo CC."""
@@ -588,14 +634,30 @@ class EmailDestinatariosSubTab:
         return bool(re.match(pattern, email.strip()))
 
     def update_credentials_status(self, message, color):
-        """Actualiza el estado de credenciales."""
+        """Actualiza el estado de credenciales con colores modernos."""
         if self.credentials_status_label:
-            self.credentials_status_label.config(text=message, foreground=color)
+            # Mapear colores a la paleta moderna
+            color_map = {
+                'green': ModernTheme.SUCCESS,
+                'red': ModernTheme.DANGER,
+                'orange': ModernTheme.WARNING,
+                'blue': ModernTheme.INFO
+            }
+            modern_color = color_map.get(color, color)
+            self.credentials_status_label.config(text=message, fg=modern_color)
 
     def update_recipients_status(self, message, color):
-        """Actualiza el estado de destinatarios."""
+        """Actualiza el estado de destinatarios con colores modernos."""
         if self.recipients_status_label:
-            self.recipients_status_label.config(text=message, foreground=color)
+            # Mapear colores a la paleta moderna
+            color_map = {
+                'green': ModernTheme.SUCCESS,
+                'red': ModernTheme.DANGER,
+                'orange': ModernTheme.WARNING,
+                'blue': ModernTheme.INFO
+            }
+            modern_color = color_map.get(color, color)
+            self.recipients_status_label.config(text=message, fg=modern_color)
 
     def show(self):
         """Muestra la sub-pestaña."""

@@ -10,6 +10,7 @@ import tkinter as tk
 from tkinter import ttk, filedialog
 import os
 from config_manager import ConfigManager
+from theme_manager import ModernTheme
 
 
 class XmlTab:
@@ -82,21 +83,26 @@ class XmlTab:
         self.create_options_section(content_frame)
 
     def create_info_section(self, parent):
-        """Crea la sección informativa superior."""
-        info_frame = ttk.LabelFrame(parent, text="💡 Información", padding=8)
+        """Crea la sección informativa superior moderna."""
+        info_frame = tk.Frame(parent, bg=ModernTheme.INFO,
+                             highlightbackground=ModernTheme.SECONDARY,
+                             highlightthickness=1)
         info_frame.pack(fill=tk.X, pady=(0, 10))
 
         month_info = self.config_manager.get_current_month_folder_info()
-        info_text = f"Configure carpetas BASE. Se agregará automáticamente \\{month_info['folder_suffix']} para el procesamiento"
+        info_text = f"💡 Configure carpetas BASE. Se agregará automáticamente \\{month_info['folder_suffix']} para el procesamiento"
 
-        info_label = ttk.Label(info_frame, text=info_text, foreground="blue",
-                               font=("Arial", 9), wraplength=600)
+        info_label = tk.Label(info_frame, text=info_text,
+                             fg=ModernTheme.TEXT_WHITE, bg=ModernTheme.INFO,
+                             font=ModernTheme.FONT_SMALL, wraplength=600,
+                             pady=8, padx=10)
         info_label.pack()
 
     def create_folders_section(self, parent):
-        """Crea la sección de carpetas con scroll optimizado."""
-        # Frame izquierdo para carpetas
-        left_frame = ttk.LabelFrame(parent, text="🗂️ Configuración de Carpetas XML", padding=10)
+        """Crea la sección moderna de carpetas con scroll optimizado."""
+        # Frame izquierdo para carpetas con estilo moderno
+        left_frame = ttk.LabelFrame(parent, text="🗂️ Configuración de Carpetas XML",
+                                   padding=10, style="Modern.TLabelframe")
         left_frame.pack(side=tk.LEFT, fill=tk.BOTH, expand=True, padx=(0, 10))
 
         # Crear scroll area optimizado
@@ -204,9 +210,10 @@ class XmlTab:
         browse_btn.pack(side=tk.RIGHT)
 
     def create_options_section(self, parent):
-        """Crea la sección de opciones."""
-        # Frame derecho para opciones
-        right_frame = ttk.LabelFrame(parent, text="⚙️ Opciones de Procesamiento", padding=10)
+        """Crea la sección moderna de opciones."""
+        # Frame derecho para opciones con estilo moderno
+        right_frame = ttk.LabelFrame(parent, text="⚙️ Opciones de Procesamiento",
+                                    padding=10, style="Modern.TLabelframe")
         right_frame.pack(side=tk.RIGHT, fill=tk.Y, padx=(0, 0))
 
         # Opciones de procesamiento
@@ -253,13 +260,16 @@ class XmlTab:
         buttons_frame.pack(fill=tk.X)
 
         ttk.Button(buttons_frame, text="💾 Guardar",
-                   command=self.save_xml_config).pack(fill=tk.X, pady=(0, 3))
+                   command=self.save_xml_config,
+                   style="Success.TButton").pack(fill=tk.X, pady=(0, 8), ipady=5)
 
         ttk.Button(buttons_frame, text="🔍 Probar Rutas",
-                   command=self.test_dynamic_xml_access).pack(fill=tk.X, pady=(0, 3))
+                   command=self.test_dynamic_xml_access,
+                   style="TButton").pack(fill=tk.X, pady=(0, 8), ipady=5)
 
         ttk.Button(buttons_frame, text="🗑️ Limpiar",
-                   command=self.clear_xml_config).pack(fill=tk.X)
+                   command=self.clear_xml_config,
+                   style="TButton").pack(fill=tk.X, ipady=5)
 
     def browse_company_folder(self, company_info):
         """Abre diálogo para seleccionar carpeta de empresa."""
