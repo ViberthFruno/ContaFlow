@@ -38,34 +38,22 @@ Esta herramienta está diseñada para:
 
 ## 🛠️ Instalación
 
-### Opción 1: Instalación con pip (Recomendado)
-1. Clone o descargue el repositorio del proyecto
-2. Navegue al directorio del proyecto
-3. Instale el paquete en modo desarrollo:
-```bash
-pip install -e .
-```
-4. Ejecute la aplicación:
-```bash
-contaflow
-```
-
-### Opción 2: Ejecución directa
-1. Asegúrese de tener Python 3.7 o posterior
-2. Clone o descargue el repositorio del proyecto
-3. Instale las dependencias:
-```bash
-pip install openpyxl pandas pdfplumber pywin32
-```
-4. Ejecute la aplicación usando el script de entrada:
-```bash
-python contaflow.py
-```
-
-### Opción 3: Ejecutable compilado
+### Opción 1: Ejecutable compilado
 1. Descargue `ContaFlow.exe` desde la ubicación interna compartida
 2. Colóquelo en la ubicación deseada de su sistema
 3. Ejecute la aplicación con doble clic
+
+### Opción 2: Compilación desde el código fuente
+1. Asegúrese de tener Python 3.9 o posterior
+2. Clone o descargue el repositorio del proyecto
+3. Instale las dependencias:
+```bash
+pip install PyQt6 pandas openpyxl pdfplumber pywin32 customtkinter
+```
+4. Ejecute la aplicación:
+```bash
+python main.py
+```
 
 ---
 
@@ -105,51 +93,23 @@ python contaflow.py
 
 ## 🗂️ Estructura del Proyecto
 
-```
-ContaFlow/
-├── contaflow.py              # Script de entrada para ejecutar la aplicación
-├── setup.py                  # Configuración de instalación del paquete
-├── config/                   # Archivos de configuración
-│   └── contaflow_config.json
-├── assets/                   # Recursos (iconos, imágenes)
-│   └── icon.ico
-└── src/
-    └── contaflow/           # Paquete principal
-        ├── main.py          # Punto de entrada de la aplicación
-        ├── ui/              # Interfaz gráfica
-        │   ├── main_window.py      # Ventana principal
-        │   ├── theme_manager.py    # Gestión de temas
-        │   └── tabs/               # Pestañas de la interfaz
-        │       ├── automatizacion_tab.py
-        │       ├── automatizacion_ui.py
-        │       ├── configuracion_tab.py
-        │       ├── busqueda_tab.py
-        │       ├── xml_tab.py
-        │       └── combustible_exclusions_tab.py
-        ├── core/            # Lógica principal del negocio
-        │   ├── bot_controller.py    # Controlador del bot
-        │   └── excel_processor.py   # Procesamiento Excel/XML
-        ├── email/           # Gestión de correos
-        │   ├── email_manager.py     # Conexiones de correo
-        │   ├── email_processor.py   # Procesamiento de emails
-        │   └── email_sender.py      # Envío de correos
-        ├── processors/      # Procesadores especializados
-        │   ├── pdf_generator.py     # Generación de PDFs
-        │   ├── pdf_processor.py     # Procesamiento de PDFs
-        │   └── otro_texto_processor.py
-        └── config/          # Gestión de configuración
-            └── config_manager.py
-```
-
-### Módulos Principales
-
-| Módulo | Descripción |
+| Archivo | Descripción |
 |---|---|
-| **ui/** | Interfaz gráfica con Tkinter y gestión de pestañas |
-| **core/** | Lógica principal: bot controller y procesamiento Excel/XML |
-| **email/** | Gestión completa de correos: conexión, procesamiento y envío |
-| **processors/** | Procesadores especializados para PDFs y otros formatos |
-| **config/** | Gestor centralizado de configuraciones |
+| `main.py` | Punto de entrada de la aplicación |
+| `automatizacion_tab.py` | Coordinador principal de la pestaña de automatización |
+| `automatizacion_ui.py` | Interfaz de usuario de la automatización |
+| `bot_controller.py` | Controlador de lógica del bot |
+| `email_processor.py` | Procesador principal de emails con filtrado por fecha |
+| `email_manager.py` | Gestor de conexiones y operaciones de correo |
+| `excel_processor.py` | Procesador de Excel y XML empresarial con rutas dinámicas |
+| `email_sender.py` | Sistema de envío consolidado de correos |
+| `config_manager.py` | Gestor de configuraciones con soporte para auto-inicio |
+| `busqueda_tab.py` | Sub-pestaña de configuración de búsqueda |
+| `xml_tab.py` | Sub-pestaña de configuración XML empresarial |
+| `destinatarios_tab.py` | Sub-pestaña de configuración de destinatarios |
+| `mensaje_tab.py` | Sub-pestaña de configuración de mensajes |
+| `pdf_processor.py` | Procesador especializado para PDFs de Correos Costa Rica |
+| `styles.py` | Estilos y constantes de la interfaz gráfica |
 
 ---
 

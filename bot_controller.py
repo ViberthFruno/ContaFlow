@@ -7,7 +7,7 @@ Maneja solo control básico del bot sin auto-inicio ni configuración de interva
 
 import threading
 import time
-from contaflow.config.config_manager import ConfigManager
+from config_manager import ConfigManager
 
 
 class BotController:
@@ -104,7 +104,7 @@ class BotController:
                 return
 
             # Importar aquí para evitar dependencias circulares
-            from contaflow.email.email_processor import EmailProcessor
+            from email_processor import EmailProcessor
 
             # Limpiar evento de parada anterior y resetear estados
             self.stop_event.clear()
