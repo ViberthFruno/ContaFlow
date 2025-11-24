@@ -244,8 +244,8 @@ class RecipientsConfigModal:
         # Crear ventana modal
         self.window = tk.Toplevel(parent)
         self.window.title("📧 Configurar Destinatarios")
-        self.window.geometry("550x450")
-        self.window.resizable(False, False)
+        self.window.geometry("550x550")
+        self.window.resizable(True, True)
 
         # Hacer modal (bloquear ventana principal)
         self.window.transient(parent)
@@ -465,8 +465,8 @@ class SearchConfigModal:
         # Crear ventana modal
         self.window = tk.Toplevel(parent)
         self.window.title("🔍 Configuración de Búsqueda")
-        self.window.geometry("550x350")
-        self.window.resizable(False, False)
+        self.window.geometry("550x450")
+        self.window.resizable(True, True)
 
         # Hacer modal (bloquear ventana principal)
         self.window.transient(parent)
@@ -686,8 +686,8 @@ class XmlConfigModal:
         # Crear ventana modal
         self.window = tk.Toplevel(parent)
         self.window.title("📄 Configuración XML")
-        self.window.geometry("700x600")
-        self.window.resizable(False, False)
+        self.window.geometry("900x800")
+        self.window.resizable(True, True)
 
         # Hacer modal
         self.window.transient(parent)
@@ -978,8 +978,8 @@ class CombustibleExclusionsModal:
         # Crear ventana modal
         self.window = tk.Toplevel(parent)
         self.window.title("⛽ Exclusiones de Combustible")
-        self.window.geometry("550x500")
-        self.window.resizable(False, False)
+        self.window.geometry("550x700")
+        self.window.resizable(True, True)
 
         # Hacer modal
         self.window.transient(parent)

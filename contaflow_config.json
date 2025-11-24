@@ -1,10 +1,10 @@
 {
   "version": "2.0",
   "created": "2025-07-18T12:54:48.830907",
-  "last_updated": "2025-08-29T16:26:00.507043",
+  "last_updated": "2025-11-24T07:13:47.589633",
   "provider": "Gmail",
   "email": "optimizacion.procesos@fruno.com",
-  "password": "eW55d2NjYnlyYnZ4ZXRmdg==",
+  "password": "aWx1ZSBscWlmIHpreHIgbWdtYQ==",
   "search_criteria": {
     "subject": "Cargador",
     "search_type": "Contiene",
@@ -30,14 +30,14 @@
       "creme_caramel": "154102",
       "su_laka": "524001"
     },
-    "combustible_exclusions": {
-      "emitter_names": []
-    },
     "output_folder": "C:\\Users\\viberth.gonzalez\\Downloads\\ContaFlow\\Procesados",
     "delete_originals": true,
     "auto_send": true,
     "detailed_logs": true,
-    "manual_review_limit": 3
+    "manual_review_limit": 3,
+    "combustible_exclusions": {
+      "emitter_names": []
+    }
   },
   "message_config": {
     "subject": "Reporte Automático de Contabilidad",
